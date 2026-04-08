@@ -1,5 +1,6 @@
 import { Card, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
+import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
 
 export type AppState = {
   acquisition: string;
@@ -83,135 +84,235 @@ export default function GrowthFunnelSimulator() {
   }, [acquisition, activation, retention, revenue, referral]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-12">
+    <div className="min-h-screen bg-[#f3f4fa] text-slate-800 font-sans pb-12">
       {/* 1. Header */}
-      <header className="h-[120px] flex flex-col items-center justify-center text-center">
-        <h1 className="text-3xl font-bold text-slate-900">Growth Funnel Simulator</h1>
-        <p className="text-slate-500 mt-2">See how changes impact user conversion</p>
+      <header className="py-10 flex flex-col items-center justify-center text-center">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 text-white p-2.5 rounded-[12px] shadow-sm">
+            <TrendingUp className="w-6 h-6" strokeWidth={2.5} />
+          </div>
+          <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Simulator</h1>
+        </div>
+        <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
       </header>
 
-      <main className="max-w-[1440px] mx-auto px-[80px] grid grid-cols-12 gap-[24px]">
+      <main className="max-w-[1440px] mx-auto px-10 grid grid-cols-12 gap-8">
+        
+        {/* Left Column: Controls */}
+        <section className="col-span-12 lg:col-span-3">
+          <Card className="p-0 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 bg-white">
+              <h2 className="text-xl font-bold text-slate-800">Controls</h2>
+              <p className="text-sm text-slate-500">Adjust levers to see the impact</p>
+            </div>
+            
+            <div className="divide-y divide-slate-100 bg-white">
+              <div className="p-4 space-y-3">
+                <div className="flex flex-col">
+                  <div className="flex items-center text-blue-600 mb-1">
+                    <Megaphone className="w-5 h-5 mr-2" />
+                    <h3 className="font-bold text-sm">Acquisition</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-7 mb-3">Where your users come from</p>
+                  <div className="ml-7 relative">
+                    <select
+                      className="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-lg text-sm bg-white appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-colors"
+                      value={acquisition}
+                      onChange={(e) => setAcquisition(e.target.value)}
+                    >
+                      <option value="X post">X (formerly Twitter)</option>
+                      <option value="Hacker News">Hacker News</option>
+                      <option value="Ads">Paid Ads</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition === 'X post' ? 'High intent, smaller volume' : acquisition === 'Hacker News' ? 'Tech audience, large spike' : 'Consistent baseline volume'}</p>
+                  </div>
+                </div>
+              </div>
 
-        {/* 2. Funnel Visualization */}
-        <section className="col-span-12 mb-8 flex justify-center">
-          <div className="bg-slate-50 p-6 rounded-xl flex flex-col items-center w-full max-w-2xl">
-            <FunnelStep
-              label="Visitors"
-              count={metrics.visitors}
-              dropoff={metrics.visitors - metrics.signups}
-            />
-            <FunnelStep
-              label="Signups"
-              count={metrics.signups}
-              rate={metrics.activationRate}
-              baseRate={0.20}
-              dropoff={metrics.signups - metrics.active}
-            />
-            <FunnelStep
-              label="Active Users"
-              count={metrics.active}
-              rate={metrics.retentionRate}
-              baseRate={0.40}
-              dropoff={metrics.active - metrics.paid}
-            />
-            <FunnelStep
-              label="Paid Customers"
-              count={metrics.paid}
-              rate={metrics.revenueRate}
-              baseRate={0.20}
-            />
-            <div className="my-2 text-blue-400 text-sm font-bold">↺ Generates</div>
-            <FunnelStep
-              label="Referrals"
-              count={metrics.referrals}
-            />
-          </div>
+              <div className="p-4 space-y-1">
+                <div className="flex flex-col mb-1">
+                  <div className="flex items-center text-blue-600 mb-1">
+                    <Zap className="w-5 h-5 mr-2" />
+                    <h3 className="font-bold text-sm">Activation</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-7">Turn visitors into signups</p>
+                </div>
+                <div className="ml-7">
+                  <Toggle label="Improve CTA" impact="+5% signup rate" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
+                  <Toggle label="Reduce friction" impact="+10% signup rate" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
+                </div>
+              </div>
+
+              <div className="p-4 space-y-1">
+                <div className="flex flex-col mb-1">
+                  <div className="flex items-center text-blue-600 mb-1">
+                    <RefreshCcw className="w-5 h-5 mr-2" />
+                    <h3 className="font-bold text-sm">Retention</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-7">Turn signups into active users</p>
+                </div>
+                <div className="ml-7">
+                  <Toggle label="Better onboarding" impact="+15% activation rate" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
+                  <Toggle label="Email reminders" impact="+10% activation rate" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
+                </div>
+              </div>
+
+              <div className="p-4 space-y-1">
+                <div className="flex flex-col mb-1">
+                  <div className="flex items-center text-blue-600 mb-1">
+                    <CircleDollarSign className="w-5 h-5 mr-2" />
+                    <h3 className="font-bold text-sm">Revenue</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-7">Turn active users into paying</p>
+                </div>
+                <div className="ml-7">
+                  <Toggle label="Free trial" impact="+10% paid rate" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
+                  <Toggle label="Better pricing" impact="+5% paid rate" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
+                </div>
+              </div>
+
+              <div className="p-4 space-y-1">
+                <div className="flex flex-col mb-1">
+                  <div className="flex items-center text-blue-600 mb-1">
+                    <Users className="w-5 h-5 mr-2" />
+                    <h3 className="font-bold text-sm">Referral</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-7">Turn paying users into referrers</p>
+                </div>
+                <div className="ml-7">
+                  <Toggle label="Invite incentive" impact="+0.3 referral" active={referral.incentive} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
+                  <Toggle label="Share button" impact="+0.2 referral" active={referral.share} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
+                </div>
+              </div>
+
+            </div>
+          </Card>
         </section>
 
-        {/* Bottom Split: Controls & Insights */}
-        <div className="col-span-12 grid grid-cols-12 gap-[24px]">
-
-          {/* 3. Controls (Left Side) */}
-          <section className="col-span-6 space-y-4">
-            <h2 className="text-lg font-bold text-slate-700 mb-4">Conversion Levers</h2>
-
-            <Card>
-              <h3 className="text-sm font-bold text-slate-500 mb-3 uppercase">Acquisition</h3>
-              <select
-                className="w-full p-2 border border-gray-200 rounded text-sm bg-white"
-                value={acquisition}
-                onChange={(e) => setAcquisition(e.target.value)}
-              >
-                <option value="X post">X post (1,000 traffic)</option>
-                <option value="Hacker News">Hacker News (1,500 traffic)</option>
-                <option value="Ads">Ads (2,000 traffic)</option>
-              </select>
-            </Card>
-
-            <Card className="space-y-2">
-              <h3 className="text-sm font-bold text-slate-500 mb-1 uppercase">Activation</h3>
-              <Toggle label="Improve CTA" impact="+5%" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
-              <Toggle label="Reduce friction" impact="+10%" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
-            </Card>
-
-            <Card className="space-y-2">
-              <h3 className="text-sm font-bold text-slate-500 mb-1 uppercase">Retention</h3>
-              <Toggle label="Better onboarding" impact="+15%" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
-              <Toggle label="Email reminder" impact="+10%" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
-            </Card>
-
-            <Card className="space-y-2">
-              <h3 className="text-sm font-bold text-slate-500 mb-1 uppercase">Revenue</h3>
-              <Toggle label="Free trial" impact="+10%" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
-              <Toggle label="Better pricing" impact="+5%" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
-            </Card>
-
-            <Card className="space-y-2">
-              <h3 className="text-sm font-bold text-slate-500 mb-1 uppercase">Referral</h3>
-              <Toggle label="Invite incentive" impact="+0.3x" active={referral.incentive} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
-              <Toggle label="Share button" impact="+0.2x" active={referral.share} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
-            </Card>
-          </section>
-
-          {/* 4. Insights (Right Side) */}
-          <section className="col-span-6">
-            <div className="sticky top-6 space-y-6">
-              <Card className="bg-blue-600 border-none text-white p-8">
-                <h2 className="text-blue-100 text-sm font-bold uppercase tracking-wide mb-2">Most Critical Impact</h2>
-                <div className="text-4xl font-bold">
-                  {metrics.topInsight[0]}: +{metrics.topInsight[1]} <span className="text-2xl font-normal opacity-80">users</span>
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-blue-500/50">
-                  <h3 className="text-sm font-medium text-blue-100 mb-3">All Metrics vs Baseline</h3>
-                  <ul className="space-y-2">
-                    {Object.entries(metrics.deltas)
-                      .filter(([_, val]) => val > 0)
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([key, val]) => (
-                        <li key={key} className="flex justify-between text-sm">
-                          <span>{key}</span>
-                          <span className="font-bold">+{val}</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </Card>
-
-              {/* 5. Experiments */}
-              <Card className="bg-amber-50 border-amber-200">
-                <h3 className="font-bold text-amber-800 mb-3">🧪 What I'd test next</h3>
-                <ul className="list-disc pl-5 space-y-2 text-amber-700 text-sm">
-                  {!activation.friction && <li>Test reducing signup friction</li>}
-                  {!retention.onboarding && <li>Improve onboarding experience</li>}
-                  {!revenue.trial && <li>Introduce a 14-day free trial</li>}
-                  {activation.friction && retention.onboarding && revenue.trial && <li>Baseline optimized. Focus on scaling top-of-funnel acquisition.</li>}
-                </ul>
-              </Card>
+        {/* Center Column: Funnel */}
+        <section className="col-span-12 lg:col-span-5 flex flex-col">
+          <Card className="p-6 h-full flex flex-col bg-white">
+            <h2 className="text-xl font-bold text-slate-800 mb-1">Funnel Overview</h2>
+            <p className="text-sm text-slate-500 mb-6">Live results based on your selections</p>
+            
+            <div className="flex-1 flex flex-col items-center justify-start w-full px-4">
+              <FunnelStep
+                label="Visitors"
+                count={metrics.visitors}
+              />
+              <FunnelStep
+                label="Signups"
+                count={metrics.signups}
+                rate={metrics.activationRate}
+                dropoff={metrics.visitors - metrics.signups}
+                dropoffPercent={((metrics.visitors - metrics.signups) / metrics.visitors) * 100}
+              />
+              <FunnelStep
+                label="Active Users"
+                count={metrics.active}
+                rate={metrics.retentionRate}
+                dropoff={metrics.signups - metrics.active}
+                dropoffPercent={((metrics.signups - metrics.active) / metrics.signups) * 100}
+              />
+              <FunnelStep
+                label="Paid Users" // Match the image name "Paid Users"
+                count={metrics.paid}
+                rate={metrics.revenueRate}
+                dropoff={metrics.active - metrics.paid}
+                dropoffPercent={((metrics.active - metrics.paid) / metrics.active) * 100}
+              />
+              <FunnelStep
+                label="Referrals"
+                count={metrics.referrals}
+                rate={metrics.referralRate}
+                dropoff={0}
+                hideArrow={true}
+              />
             </div>
-          </section>
+          </Card>
+        </section>
 
-        </div>
+        {/* Right Column: Insights */}
+        <section className="col-span-12 lg:col-span-4 flex flex-col">
+          <Card className="p-6 h-full flex flex-col bg-white">
+            <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
+            <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
+
+            <div className="bg-blue-50/50 border border-blue-200 rounded-xl p-5 relative overflow-hidden mb-8">
+              <div className="absolute top-4 right-4 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider">
+                Most Critical
+              </div>
+              <Lightbulb className="text-blue-500 w-8 h-8 mb-4 stroke-[1.5]" />
+              <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
+              <div className="flex items-end mb-3 mt-2">
+                <span className="text-4xl font-bold text-blue-600 leading-none">+{metrics.topInsight[1]}</span>
+                <span className="text-xl text-blue-600 ml-2 font-medium">users</span>
+              </div>
+              <p className="text-sm text-slate-600 font-medium">
+                If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-slate-800 mb-4 flex items-center">Impact by Step <span className="text-slate-400 font-normal ml-1 text-sm">(paid users)</span></h3>
+              <div className="space-y-4">
+                {Object.entries(metrics.deltas)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([key, val]) => (
+                    <div key={key} className="flex items-center">
+                      <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
+                      <div className="flex-1 flex items-center h-4 relative">
+                        <div className="h-2 bg-blue-500 rounded-full" style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: val > 0 ? '8px' : '0' }}></div>
+                      </div>
+                      <div className="w-8 text-right text-sm font-bold text-slate-800">{val > 0 ? `+${val}` : '0'}</div>
+                    </div>
+                  ))}
+              </div>
+              <p className="text-xs text-slate-400 mt-6 pt-4 border-t border-slate-100">
+                Calculated by comparing current state vs. removing each improvement.
+              </p>
+            </div>
+          </Card>
+        </section>
+
+        {/* Bottom Section: What I'd Test Next */}
+        {/* Wait, the image shows "What I'd Test Next" taking full 12 columns under the 3 columns! */}
+        <section className="col-span-12 mt-4">
+          <Card className="p-6 bg-white shrink-0">
+            <h2 className="text-xl font-bold text-slate-800 mb-1">What I'd Test Next</h2>
+            <p className="text-sm text-slate-500 mb-6">Based on your current funnel and biggest opportunities</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex items-start p-4 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50/50 transition-colors duration-200">
+                <Target className="w-8 h-8 text-blue-600 mt-1 shrink-0 bg-blue-100 p-1.5 rounded-full" />
+                <div className="ml-4">
+                  <h4 className="font-bold text-slate-900 mb-1">Test reducing signup friction</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">Signup rate could improve by 10-20% with a simpler flow.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start p-4 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/50 transition-colors duration-200">
+                <Rocket className="w-8 h-8 text-purple-600 mt-1 shrink-0 bg-purple-100 p-1.5 rounded-full" />
+                <div className="ml-4">
+                  <h4 className="font-bold text-slate-900 mb-1">Improve onboarding experience</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">Activation is your biggest lever. Small gains = big impact.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start p-4 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50/50 transition-colors duration-200">
+                <Mail className="w-8 h-8 text-blue-600 mt-1 shrink-0 bg-blue-100 p-1.5 rounded-full" />
+                <div className="ml-4">
+                  <h4 className="font-bold text-slate-900 mb-1">Try email re-engagement</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">Win back inactive users with a simple email sequence.</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </section>
+
       </main>
     </div>
   );
