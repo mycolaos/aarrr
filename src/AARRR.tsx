@@ -1,6 +1,7 @@
 import { Card, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
+import { getColorsForStage } from './colors';
 
 export type AppState = {
   acquisition: string;
@@ -83,16 +84,6 @@ export default function GrowthFunnelSimulator() {
     return { ...rates, ...funnel, deltas, topInsight };
   }, [acquisition, activation, retention, revenue, referral]);
 
-  const getColorsForStage = (stage: string) => {
-    switch (stage) {
-      case 'Acquisition': return { bg: 'bg-blue-50/50', border: 'border-blue-200', text: 'text-blue-600', badge: 'bg-blue-500', icon: 'text-blue-500' };
-      case 'Activation': return { bg: 'bg-green-50/50', border: 'border-green-200', text: 'text-green-600', badge: 'bg-green-500', icon: 'text-green-500' };
-      case 'Retention': return { bg: 'bg-purple-50/50', border: 'border-purple-200', text: 'text-purple-600', badge: 'bg-purple-500', icon: 'text-purple-500' };
-      case 'Revenue': return { bg: 'bg-orange-50/50', border: 'border-orange-200', text: 'text-orange-600', badge: 'bg-orange-500', icon: 'text-orange-500' };
-      case 'Referral': return { bg: 'bg-fuchsia-50/50', border: 'border-fuchsia-200', text: 'text-fuchsia-600', badge: 'bg-fuchsia-500', icon: 'text-fuchsia-500' };
-      default: return { bg: 'bg-blue-50/50', border: 'border-blue-200', text: 'text-blue-600', badge: 'bg-blue-500', icon: 'text-blue-500' };
-    }
-  };
   const topColor = getColorsForStage(metrics.topInsight[0]);
 
   return (

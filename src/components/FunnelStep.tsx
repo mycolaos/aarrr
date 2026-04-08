@@ -1,11 +1,12 @@
 import { Users, UserPlus, Zap, DollarSign, Share2, ArrowDown } from 'lucide-react';
+import { getColorsForStage } from '../colors';
 
-const stepConfig: Record<string, { border: string, bg: string, iconBg: string, iconColor: string, Icon: any }> = {
-  "Visitors": { border: 'border-blue-300', bg: 'bg-blue-50/50', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', Icon: Users },
-  "Signups": { border: 'border-green-300', bg: 'bg-green-50/50', iconBg: 'bg-green-100', iconColor: 'text-green-600', Icon: UserPlus },
-  "Active Users": { border: 'border-purple-300', bg: 'bg-purple-50/50', iconBg: 'bg-purple-100', iconColor: 'text-purple-600', Icon: Zap },
-  "Paid Users": { border: 'border-orange-300', bg: 'bg-orange-50/50', iconBg: 'bg-orange-100', iconColor: 'text-orange-600', Icon: DollarSign },
-  "Referrals": { border: 'border-fuchsia-300', bg: 'bg-fuchsia-50/50', iconBg: 'bg-fuchsia-100', iconColor: 'text-fuchsia-600', Icon: Share2 },
+const stepIcons: Record<string, any> = {
+  "Visitors": Users,
+  "Signups": UserPlus,
+  "Active Users": Zap,
+  "Paid Users": DollarSign,
+  "Referrals": Share2,
 };
 
 export const FunnelStep = ({
@@ -23,8 +24,8 @@ export const FunnelStep = ({
   dropoffPercent?: number,
   showTopArrow?: boolean
 }) => {
-  const config = stepConfig[label] || stepConfig["Visitors"];
-  const Icon = config.Icon;
+  const colors = getColorsForStage(label);
+  const Icon = stepIcons[label] || Users;
   const showDropOff = dropoff !== undefined && dropoffPercent !== undefined;
 
   return (
@@ -40,9 +41,9 @@ export const FunnelStep = ({
           <ArrowDown className="w-4 h-4 text-slate-400 my-auto" />
         </div>
       )}
-      <div className={`w-full flex items-center p-4 rounded-xl border ${config.border} ${config.bg}`}>
-        <div className={`w-12 h-12 shrink-0 rounded-xl flex items-center justify-center mr-4 ${config.iconBg}`}>
-          <Icon className={`w-6 h-6 ${config.iconColor}`} />
+      <div className={`w-full flex items-center p-4 rounded-xl border ${colors.border} ${colors.bg}`}>
+        <div className={`w-12 h-12 shrink-0 rounded-xl flex items-center justify-center mr-4 ${colors.iconBg}`}>
+          <Icon className={`w-6 h-6 ${colors.text}`} />
         </div>
         <div className="flex-1">
           <h3 className="text-slate-900 font-bold text-[15px]">{label}</h3>
