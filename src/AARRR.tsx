@@ -243,8 +243,8 @@ export default function GrowthFunnelSimulator() {
         </section>
 
         {/* Right Column: Insights */}
-        <section className="col-span-24 lg:col-span-8 flex flex-col">
-          <Card className="p-6 h-full flex flex-col bg-white">
+        <section className="col-span-24 lg:col-span-8 flex flex-col gap-6">
+          <Card className="p-6 flex-1 flex flex-col bg-white">
             <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
             <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
 
@@ -294,37 +294,34 @@ export default function GrowthFunnelSimulator() {
               </div>
             )}
           </Card>
-        </section>
 
-        {/* Bottom Section: What I'd Test Next */}
-        {/* Wait, the image shows "What I'd Test Next" taking full 12 columns under the 3 columns! */}
-        <section className="col-span-12 mt-4">
-          <Card className="p-6 bg-white shrink-0">
-            <h2 className="text-xl font-bold text-slate-800 mb-1">What I'd Test Next</h2>
-            <p className="text-sm text-slate-500 mb-6">Based on your current funnel and biggest opportunities</p>
+          {/* Bottom Section: What I'd Test Next */}
+          <Card className="p-5 bg-white shrink-0">
+            <h2 className="text-lg font-bold text-slate-800 mb-1">What to Test Next</h2>
+            <p className="text-xs text-slate-500 mb-5">Based on existing funnel opportunities</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-start p-4 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/50 transition-colors duration-200">
-                <Target className="w-8 h-8 text-green-600 mt-1 shrink-0 bg-green-100 p-1.5 rounded-full" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-slate-900 mb-1">Test reducing signup friction</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">Signup rate could improve by 10-20% with a simpler flow.</p>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
+                <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
+                <div className="ml-3">
+                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Reduce signup friction</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by 10-20% with a simpler flow.</p>
                 </div>
               </div>
 
-              <div className="flex items-start p-4 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/50 transition-colors duration-200">
-                <Rocket className="w-8 h-8 text-purple-600 mt-1 shrink-0 bg-purple-100 p-1.5 rounded-full" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-slate-900 mb-1">Improve onboarding experience</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">Activation is your biggest lever. Small gains = big impact.</p>
+              <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
+                <Rocket className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
+                <div className="ml-3">
+                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve onboarding</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">Activation is your biggest lever. Small gains = big impact.</p>
                 </div>
               </div>
 
-              <div className="flex items-start p-4 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/50 transition-colors duration-200">
-                <Mail className="w-8 h-8 text-purple-600 mt-1 shrink-0 bg-purple-100 p-1.5 rounded-full" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-slate-900 mb-1">Try email re-engagement</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">Win back inactive users with a simple email sequence.</p>
+              <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
+                <Mail className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
+                <div className="ml-3">
+                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Try email re-engagement</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">Win back inactive users with a simple email sequence.</p>
                 </div>
               </div>
             </div>
