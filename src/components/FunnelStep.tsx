@@ -2,10 +2,10 @@ import { Users, UserPlus, Zap, DollarSign, Share2, ArrowDown } from 'lucide-reac
 
 const stepConfig: Record<string, { border: string, bg: string, iconBg: string, iconColor: string, Icon: any }> = {
   "Visitors": { border: 'border-blue-300', bg: 'bg-blue-50/50', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', Icon: Users },
-  "Signups": { border: 'border-blue-300', bg: 'bg-blue-50/50', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', Icon: UserPlus },
-  "Active Users": { border: 'border-emerald-300', bg: 'bg-emerald-50/50', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', Icon: Zap },
-  "Paid Users": { border: 'border-amber-300', bg: 'bg-amber-50/50', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', Icon: DollarSign },
-  "Referrals": { border: 'border-purple-300', bg: 'bg-purple-50/50', iconBg: 'bg-purple-100', iconColor: 'text-purple-600', Icon: Share2 },
+  "Signups": { border: 'border-green-300', bg: 'bg-green-50/50', iconBg: 'bg-green-100', iconColor: 'text-green-600', Icon: UserPlus },
+  "Active Users": { border: 'border-purple-300', bg: 'bg-purple-50/50', iconBg: 'bg-purple-100', iconColor: 'text-purple-600', Icon: Zap },
+  "Paid Users": { border: 'border-orange-300', bg: 'bg-orange-50/50', iconBg: 'bg-orange-100', iconColor: 'text-orange-600', Icon: DollarSign },
+  "Referrals": { border: 'border-fuchsia-300', bg: 'bg-fuchsia-50/50', iconBg: 'bg-fuchsia-100', iconColor: 'text-fuchsia-600', Icon: Share2 },
 };
 
 export const FunnelStep = ({

@@ -1,4 +1,4 @@
-export const Toggle = ({ label, impact, active, onClick }: { label: string, impact: string, active: boolean, onClick: () => void }) => (
+export const Toggle = ({ label, impact, active, onClick, colorClass = "bg-blue-600" }: { label: string, impact: string, active: boolean, onClick: () => void, colorClass?: string }) => (
   <div className="flex items-center justify-between py-2">
     <div className="flex flex-col">
       <span className="text-sm font-semibold text-slate-800">{label}</span>
@@ -7,7 +7,7 @@ export const Toggle = ({ label, impact, active, onClick }: { label: string, impa
     <button
       onClick={onClick}
       className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-        active ? 'bg-blue-600' : 'bg-slate-200'
+        active ? colorClass : 'bg-slate-200'
       }`}
       role="switch"
       aria-checked={active}
