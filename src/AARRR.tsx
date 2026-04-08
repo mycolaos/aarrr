@@ -248,40 +248,51 @@ export default function GrowthFunnelSimulator() {
             <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
             <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
 
-            <div className={`${topColor.bg} border ${topColor.border} rounded-xl p-5 relative overflow-hidden mb-8`}>
-              <div className={`absolute top-4 right-4 ${topColor.badge} text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider`}>
-                Most Critical
+            {metrics.topInsight[1] > 0 && (
+              <div className={`${topColor.bg} border ${topColor.border} rounded-xl p-5 relative overflow-hidden mb-8`}>
+                <div className={`absolute top-4 right-4 ${topColor.badge} text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider`}>
+                  Most Critical
+                </div>
+                <Lightbulb className={`${topColor.icon} w-8 h-8 mb-4 stroke-[1.5]`} />
+                <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
+                <div className="flex items-end mb-3 mt-2">
+                  <span className={`text-4xl font-bold ${topColor.text} leading-none`}>+{metrics.topInsight[1]}</span>
+                  <span className={`text-xl ${topColor.text} ml-2 font-medium`}>paid users</span>
+                </div>
+                <p className="text-sm text-slate-600 font-medium">
+                  If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
+                </p>
               </div>
-              <Lightbulb className={`${topColor.icon} w-8 h-8 mb-4 stroke-[1.5]`} />
-              <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
-              <div className="flex items-end mb-3 mt-2">
-                <span className={`text-4xl font-bold ${topColor.text} leading-none`}>+{metrics.topInsight[1]}</span>
-                <span className={`text-xl ${topColor.text} ml-2 font-medium`}>paid users</span>
-              </div>
-              <p className="text-sm text-slate-600 font-medium">
-                If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
-              </p>
-            </div>
+            )}
 
-            <div>
-              <h3 className="font-bold text-slate-800 mb-4 flex items-center">Impact by Step <span className="text-slate-400 font-normal ml-1 text-sm">(paid users)</span></h3>
-              <div className="space-y-4">
-                {Object.entries(metrics.deltas)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([key, val]) => (
-                    <div key={key} className="flex items-center">
-                      <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
-                      <div className="flex-1 flex items-center h-4 relative">
-                        <div className={`h-2 ${getColorsForStage(key).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: val > 0 ? '8px' : '0' }}></div>
+            {metrics.topInsight[1] > 0 ? (
+              <div>
+                <h3 className="font-bold text-slate-800 mb-4 flex items-center">Impact by Step <span className="text-slate-400 font-normal ml-1 text-sm">(paid users)</span></h3>
+                <div className="space-y-4">
+                  {Object.entries(metrics.deltas)
+                    .filter(([, val]) => val > 0)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([key, val]) => (
+                      <div key={key} className="flex items-center">
+                        <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
+                        <div className="flex-1 flex items-center h-4 relative">
+                          <div className={`h-2 ${getColorsForStage(key).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: '8px' }}></div>
+                        </div>
+                        <div className="w-8 text-right text-sm font-bold text-slate-800">+{val}</div>
                       </div>
-                      <div className="w-8 text-right text-sm font-bold text-slate-800">{val > 0 ? `+${val}` : '0'}</div>
-                    </div>
-                  ))}
+                    ))}
+                </div>
+                <p className="text-xs text-slate-400 mt-6 pt-4 border-t border-slate-100">
+                  Calculated by comparing current state vs. removing each improvement.
+                </p>
               </div>
-              <p className="text-xs text-slate-400 mt-6 pt-4 border-t border-slate-100">
-                Calculated by comparing current state vs. removing each improvement.
-              </p>
-            </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-400 mt-8">
+                <Lightbulb className="w-12 h-12 mb-3 text-slate-200" />
+                <p className="text-sm font-medium text-slate-500">No impact to show yet</p>
+                <p className="text-xs mt-1">Enable improvements to see their impact here.</p>
+              </div>
+            )}
           </Card>
         </section>
 
