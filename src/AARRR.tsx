@@ -14,9 +14,10 @@ export type AppState = {
 const baseVisitors = 1000;
 
 export function applyModifiers(state: AppState) {
-  const visitors = state.acquisition === 'Ads' ? 2000 : state.acquisition === 'Hacker News' ? 1500 : baseVisitors;
+  const visitors = state.acquisition === 'Ads' ? 3000 : state.acquisition === 'Hacker News' ? 1500 : baseVisitors;
+  const qualityFactor = state.acquisition === 'Hacker News' ? 1.5 : state.acquisition === 'X post' ? 0.5 : 1.0;
 
-  let activationRate = 0.20;
+  let activationRate = 0.20 * qualityFactor;
   if (state.activation.cta) activationRate += 0.05;
   if (state.activation.friction) activationRate += 0.10;
 
@@ -126,7 +127,7 @@ export default function GrowthFunnelSimulator() {
                         value={acquisition}
                         onChange={(e) => setAcquisition(e.target.value)}
                       >
-                        <option value="X post">X (formerly Twitter)</option>
+                        <option value="X post">X (default)</option>
                         <option value="Hacker News">Hacker News</option>
                         <option value="Ads">Paid Ads</option>
                       </select>
@@ -134,7 +135,7 @@ export default function GrowthFunnelSimulator() {
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                       </div>
                     </div>
-                    <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition === 'X post' ? 'High intent, smaller volume' : acquisition === 'Hacker News' ? 'Tech audience, large spike' : 'Consistent baseline volume'}</p>
+                    <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition === 'X post' ? 'Low quality: Low intent, smaller volume' : acquisition === 'Hacker News' ? 'High quality: Tech audience, large spike' : 'Medium quality: Consistent baseline volume'}</p>
                   </div>
                 </div>
               </div>
@@ -186,7 +187,7 @@ export default function GrowthFunnelSimulator() {
                   <div className="flex items-center text-fuchsia-600 mb-1">
                     <Users className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Referral</h3>
-                  <p className="text-xs text-slate-500 ml-auto">Turn paying users into referrers</p>
+                    <p className="text-xs text-slate-500 ml-auto">Turn paying users into referrers</p>
                   </div>
                 </div>
                 <div className="ml-7">
