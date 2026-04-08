@@ -1,10 +1,70 @@
 import { Card, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
 
-export default function GrowthFunnelSimulator() {
-  // Base Metrics
-  const baseVisitors = 1000;
+export type AppState = {
+  acquisition: string;
+  activation: { cta: boolean; friction: boolean };
+  retention: { onboarding: boolean; email: boolean };
+  revenue: { trial: boolean; pricing: boolean };
+  referral: { incentive: boolean; share: boolean };
+};
 
+const baseVisitors = 1000;
+
+export function applyModifiers(state: AppState) {
+  const visitors = state.acquisition === 'Ads' ? 2000 : state.acquisition === 'Hacker News' ? 1500 : baseVisitors;
+
+  let activationRate = 0.20;
+  if (state.activation.cta) activationRate += 0.05;
+  if (state.activation.friction) activationRate += 0.10;
+
+  let retentionRate = 0.40;
+  if (state.retention.onboarding) retentionRate += 0.15;
+  if (state.retention.email) retentionRate += 0.10;
+
+  let revenueRate = 0.20;
+  if (state.revenue.trial) revenueRate += 0.10;
+  if (state.revenue.pricing) revenueRate += 0.05;
+
+  let referralRate = 0.50;
+  if (state.referral.incentive) referralRate += 0.30;
+  if (state.referral.share) referralRate += 0.20;
+
+  return { visitors, activationRate, retentionRate, revenueRate, referralRate };
+}
+
+export function computeFunnel(rates: ReturnType<typeof applyModifiers>) {
+  const signups = rates.visitors * rates.activationRate;
+  const active = signups * rates.retentionRate;
+  const paid = active * rates.revenueRate;
+  const referrals = paid * rates.referralRate;
+  return { visitors: rates.visitors, signups, active, paid, referrals };
+}
+
+export function getImpact(state: AppState) {
+  const currentRates = applyModifiers(state);
+  const currentFunnel = computeFunnel(currentRates);
+
+  const baseAcquisitionRates = applyModifiers({ ...state, acquisition: 'X post' });
+  const baseActivationRates = applyModifiers({ ...state, activation: { cta: false, friction: false } });
+  const baseRetentionRates = applyModifiers({ ...state, retention: { onboarding: false, email: false } });
+  const baseRevenueRates = applyModifiers({ ...state, revenue: { trial: false, pricing: false } });
+  const baseReferralRates = applyModifiers({ ...state, referral: { incentive: false, share: false } });
+
+  const deltas = {
+    Acquisition: Math.round(currentFunnel.paid - computeFunnel(baseAcquisitionRates).paid),
+    Activation: Math.round(currentFunnel.paid - computeFunnel(baseActivationRates).paid),
+    Retention: Math.round(currentFunnel.paid - computeFunnel(baseRetentionRates).paid),
+    Revenue: Math.round(currentFunnel.paid - computeFunnel(baseRevenueRates).paid),
+    Referral: Math.round(currentFunnel.referrals - computeFunnel(baseReferralRates).referrals)
+  };
+
+  const topInsight = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b, ['None', 0]);
+
+  return { deltas, topInsight };
+}
+
+export default function GrowthFunnelSimulator() {
   // States
   const [acquisition, setAcquisition] = useState('X post');
   const [activation, setActivation] = useState({ cta: false, friction: false });
@@ -14,51 +74,12 @@ export default function GrowthFunnelSimulator() {
 
   // Calculations
   const metrics = useMemo(() => {
-    // Acquisition (Simulating different traffic volumes based on source)
-    const visitors = acquisition === 'Ads' ? 2000 : acquisition === 'Hacker News' ? 1500 : baseVisitors;
+    const state = { acquisition, activation, retention, revenue, referral };
+    const rates = applyModifiers(state);
+    const funnel = computeFunnel(rates);
+    const { deltas, topInsight } = getImpact(state);
 
-    // Activation (Base 20%)
-    let activationRate = 0.20;
-    if (activation.cta) activationRate += 0.05;
-    if (activation.friction) activationRate += 0.10;
-    const signups = visitors * activationRate;
-
-    // Retention (Base 40%)
-    let retentionRate = 0.40;
-    if (retention.onboarding) retentionRate += 0.15;
-    if (retention.email) retentionRate += 0.10;
-    const active = signups * retentionRate;
-
-    // Revenue (Base 20%)
-    let revenueRate = 0.20;
-    if (revenue.trial) revenueRate += 0.10;
-    if (revenue.pricing) revenueRate += 0.05;
-    const paid = active * revenueRate;
-
-    // Referral (Base 0.5 per paid user to get 8 from 16)
-    let referralRate = 0.50;
-    if (referral.incentive) referralRate += 0.30;
-    if (referral.share) referralRate += 0.20;
-    const referrals = paid * referralRate;
-
-    // Deltas (compared to base state of 1000 visitors)
-    const baseSignups = 200;
-    const baseActive = 80;
-    const basePaid = 16;
-    const baseReferrals = 8;
-
-    const deltas = {
-      Acquisition: visitors - baseVisitors,
-      Activation: Math.round(signups - baseSignups),
-      Retention: Math.round(active - baseActive),
-      Revenue: Math.round(paid - basePaid),
-      Referral: Math.round(referrals - baseReferrals)
-    };
-
-    // Find biggest impact
-    const topInsight = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b);
-
-    return { visitors, signups, active, paid, referrals, activationRate, retentionRate, revenueRate, deltas, topInsight };
+    return { ...rates, ...funnel, deltas, topInsight };
   }, [acquisition, activation, retention, revenue, referral]);
 
   return (
