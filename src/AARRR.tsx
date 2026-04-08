@@ -101,10 +101,10 @@ export default function GrowthFunnelSimulator() {
         </div>
       </header>
 
-      <main className="max-w-[1440px] mx-auto px-10 grid grid-cols-12 gap-8">
+      <main className="max-w-[1440px] mx-auto px-10 grid grid-cols-24 gap-8">
 
         {/* Left Column: Controls */}
-        <section className="col-span-12 lg:col-span-3">
+        <section className="col-span-24 lg:col-span-7">
           <Card className="p-0 overflow-hidden">
             <div className="p-4 border-b border-slate-100 bg-white">
               <h2 className="text-xl font-bold text-slate-800">Controls</h2>
@@ -114,11 +114,11 @@ export default function GrowthFunnelSimulator() {
             <div className="divide-y divide-slate-100 bg-white">
               <div className="p-4 space-y-3">
                 <div className="flex flex-col">
-                  <div className="flex items-center text-blue-600 mb-1">
+                  <div className="flex items-center text-blue-600 mb-3">
                     <Megaphone className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Acquisition</h3>
+                    <p className="text-xs text-slate-500 ml-auto">Where your users come from</p>
                   </div>
-                  <p className="text-xs text-slate-500 ml-7 mb-3">Where your users come from</p>
                   <div className="ml-7 relative">
                     <div className="relative">
                       <select
@@ -144,12 +144,12 @@ export default function GrowthFunnelSimulator() {
                   <div className="flex items-center text-green-600 mb-1">
                     <Zap className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Activation</h3>
+                    <p className="text-xs text-slate-500 ml-auto">Turn visitors into signups</p>
                   </div>
-                  <p className="text-xs text-slate-500 ml-7">Turn visitors into signups</p>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Improve CTA" impact="+5% signup rate" colorClass="bg-green-600" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
-                  <Toggle label="Reduce friction" impact="+10% signup rate" colorClass="bg-green-600" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
+                  <Toggle label="Improve CTA" impact="+5% signup" colorClass="bg-green-600" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
+                  <Toggle label="Reduce friction" impact="+10% signup" colorClass="bg-green-600" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
                 </div>
               </div>
 
@@ -158,12 +158,12 @@ export default function GrowthFunnelSimulator() {
                   <div className="flex items-center text-purple-600 mb-1">
                     <RefreshCcw className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Retention</h3>
+                    <p className="text-xs text-slate-500 ml-auto">Turn signups into active users</p>
                   </div>
-                  <p className="text-xs text-slate-500 ml-7">Turn signups into active users</p>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Better onboarding" impact="+15% activation rate" colorClass="bg-purple-600" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
-                  <Toggle label="Email reminders" impact="+10% activation rate" colorClass="bg-purple-600" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
+                  <Toggle label="Better onboarding" impact="+15% activation" colorClass="bg-purple-600" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
+                  <Toggle label="Email reminders" impact="+10% activation" colorClass="bg-purple-600" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
                 </div>
               </div>
 
@@ -172,12 +172,12 @@ export default function GrowthFunnelSimulator() {
                   <div className="flex items-center text-orange-600 mb-1">
                     <CircleDollarSign className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Revenue</h3>
+                    <p className="text-xs text-slate-500 ml-auto">Turn active users into paying</p>
                   </div>
-                  <p className="text-xs text-slate-500 ml-7">Turn active users into paying</p>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Free trial" impact="+10% paid rate" colorClass="bg-orange-600" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
-                  <Toggle label="Better pricing" impact="+5% paid rate" colorClass="bg-orange-600" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
+                  <Toggle label="Free trial" impact="+10% paid" colorClass="bg-orange-600" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
+                  <Toggle label="Better pricing" impact="+5% paid" colorClass="bg-orange-600" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
                 </div>
               </div>
 
@@ -186,8 +186,8 @@ export default function GrowthFunnelSimulator() {
                   <div className="flex items-center text-fuchsia-600 mb-1">
                     <Users className="w-5 h-5 mr-2" />
                     <h3 className="font-bold text-sm">Referral</h3>
+                  <p className="text-xs text-slate-500 ml-auto">Turn paying users into referrers</p>
                   </div>
-                  <p className="text-xs text-slate-500 ml-7">Turn paying users into referrers</p>
                 </div>
                 <div className="ml-7">
                   <Toggle label="Invite incentive" impact="+0.3 referral" colorClass="bg-fuchsia-600" active={referral.incentive} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
@@ -200,7 +200,7 @@ export default function GrowthFunnelSimulator() {
         </section>
 
         {/* Center Column: Funnel */}
-        <section className="col-span-12 lg:col-span-5 flex flex-col">
+        <section className="col-span-24 lg:col-span-9 flex flex-col">
           <Card className="p-6 h-full flex flex-col bg-white">
             <h2 className="text-xl font-bold text-slate-800 mb-1">Funnel Overview</h2>
             <p className="text-sm text-slate-500 mb-6">Live results based on your selections</p>
@@ -243,7 +243,7 @@ export default function GrowthFunnelSimulator() {
         </section>
 
         {/* Right Column: Insights */}
-        <section className="col-span-12 lg:col-span-4 flex flex-col">
+        <section className="col-span-24 lg:col-span-8 flex flex-col">
           <Card className="p-6 h-full flex flex-col bg-white">
             <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
             <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>

@@ -1,8 +1,8 @@
 export const Toggle = ({ label, impact, active, onClick, colorClass = "bg-blue-600" }: { label: string, impact: string, active: boolean, onClick: () => void, colorClass?: string }) => (
   <div className="flex items-center justify-between py-2">
-    <div className="flex flex-col">
+    <div className="w-full grid grid-cols-2 gap-2">
       <span className="text-sm font-semibold text-slate-800">{label}</span>
-      <span className="text-xs font-medium text-emerald-600">{impact}</span>
+      <span className="text-xs font-medium text-emerald-600 text-right pr-3">{impact}</span>
     </div>
     <button
       onClick={onClick}
