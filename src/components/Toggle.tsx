@@ -15,7 +15,7 @@ export const Toggle = ({ label, impact, active, onClick }: { label: string, impa
       <span
         aria-hidden="true"
         className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-          active ? 'translate-x-[16px]' : 'translate-x-[2px]'
+          active ? 'translate-x-[8px]' : 'translate-x-[calc(-100%+8px)]'
         }`}
       />
     </button>

@@ -86,18 +86,20 @@ export default function GrowthFunnelSimulator() {
   return (
     <div className="min-h-screen bg-[#f3f4fa] text-slate-800 font-sans pb-12">
       {/* 1. Header */}
-      <header className="py-10 flex flex-col items-center justify-center text-center">
-        <div className="flex items-center gap-3">
+      <header className="max-w-[1440px] mx-auto px-10 py-10 flex flex-col justify-center">
+        <div className="flex items-start gap-3">
           <div className="bg-blue-600 text-white p-2.5 rounded-[12px] shadow-sm">
             <TrendingUp className="w-6 h-6" strokeWidth={2.5} />
           </div>
-          <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Simulator</h1>
+          <div className="flex flex-col">
+            <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Simulator</h1>
+            <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
+          </div>
         </div>
-        <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
       </header>
 
       <main className="max-w-[1440px] mx-auto px-10 grid grid-cols-12 gap-8">
-        
+
         {/* Left Column: Controls */}
         <section className="col-span-12 lg:col-span-3">
           <Card className="p-0 overflow-hidden">
@@ -105,7 +107,7 @@ export default function GrowthFunnelSimulator() {
               <h2 className="text-xl font-bold text-slate-800">Controls</h2>
               <p className="text-sm text-slate-500">Adjust levers to see the impact</p>
             </div>
-            
+
             <div className="divide-y divide-slate-100 bg-white">
               <div className="p-4 space-y-3">
                 <div className="flex flex-col">
@@ -115,17 +117,19 @@ export default function GrowthFunnelSimulator() {
                   </div>
                   <p className="text-xs text-slate-500 ml-7 mb-3">Where your users come from</p>
                   <div className="ml-7 relative">
-                    <select
-                      className="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-lg text-sm bg-white appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-colors"
-                      value={acquisition}
-                      onChange={(e) => setAcquisition(e.target.value)}
-                    >
-                      <option value="X post">X (formerly Twitter)</option>
-                      <option value="Hacker News">Hacker News</option>
-                      <option value="Ads">Paid Ads</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    <div className="relative">
+                      <select
+                        className="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-lg text-sm bg-white appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-colors"
+                        value={acquisition}
+                        onChange={(e) => setAcquisition(e.target.value)}
+                      >
+                        <option value="X post">X (formerly Twitter)</option>
+                        <option value="Hacker News">Hacker News</option>
+                        <option value="Ads">Paid Ads</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
                     </div>
                     <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition === 'X post' ? 'High intent, smaller volume' : acquisition === 'Hacker News' ? 'Tech audience, large spike' : 'Consistent baseline volume'}</p>
                   </div>
@@ -197,7 +201,7 @@ export default function GrowthFunnelSimulator() {
           <Card className="p-6 h-full flex flex-col bg-white">
             <h2 className="text-xl font-bold text-slate-800 mb-1">Funnel Overview</h2>
             <p className="text-sm text-slate-500 mb-6">Live results based on your selections</p>
-            
+
             <div className="flex-1 flex flex-col items-center justify-start w-full px-4">
               <FunnelStep
                 label="Visitors"
@@ -229,7 +233,7 @@ export default function GrowthFunnelSimulator() {
                 count={metrics.referrals}
                 rate={metrics.referralRate}
                 dropoff={0}
-                hideArrow={true}
+                showTopArrow={true}
               />
             </div>
           </Card>
@@ -249,7 +253,7 @@ export default function GrowthFunnelSimulator() {
               <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
               <div className="flex items-end mb-3 mt-2">
                 <span className="text-4xl font-bold text-blue-600 leading-none">+{metrics.topInsight[1]}</span>
-                <span className="text-xl text-blue-600 ml-2 font-medium">users</span>
+                <span className="text-xl text-blue-600 ml-2 font-medium">paid users</span>
               </div>
               <p className="text-sm text-slate-600 font-medium">
                 If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
@@ -284,7 +288,7 @@ export default function GrowthFunnelSimulator() {
           <Card className="p-6 bg-white shrink-0">
             <h2 className="text-xl font-bold text-slate-800 mb-1">What I'd Test Next</h2>
             <p className="text-sm text-slate-500 mb-6">Based on your current funnel and biggest opportunities</p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-start p-4 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50/50 transition-colors duration-200">
                 <Target className="w-8 h-8 text-blue-600 mt-1 shrink-0 bg-blue-100 p-1.5 rounded-full" />
@@ -293,7 +297,7 @@ export default function GrowthFunnelSimulator() {
                   <p className="text-sm text-slate-600 leading-relaxed">Signup rate could improve by 10-20% with a simpler flow.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start p-4 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/50 transition-colors duration-200">
                 <Rocket className="w-8 h-8 text-purple-600 mt-1 shrink-0 bg-purple-100 p-1.5 rounded-full" />
                 <div className="ml-4">
@@ -301,7 +305,7 @@ export default function GrowthFunnelSimulator() {
                   <p className="text-sm text-slate-600 leading-relaxed">Activation is your biggest lever. Small gains = big impact.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start p-4 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50/50 transition-colors duration-200">
                 <Mail className="w-8 h-8 text-blue-600 mt-1 shrink-0 bg-blue-100 p-1.5 rounded-full" />
                 <div className="ml-4">
