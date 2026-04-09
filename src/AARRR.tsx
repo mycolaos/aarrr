@@ -55,8 +55,10 @@ export function applyModifiers(state: AppState) {
   if (state.revenue.pricing) revenueRate += CONTROL_RATES.revenue.pricing;
 
   let referralRate = 0.50;
-  if (state.referral.incentive) referralRate += CONTROL_RATES.referral.incentive;
-  if (state.referral.share) referralRate += CONTROL_RATES.referral.share;
+  if (state.referral.factorReferrals) {
+    if (state.referral.incentive) referralRate += CONTROL_RATES.referral.incentive;
+    if (state.referral.share) referralRate += CONTROL_RATES.referral.share;
+  }
 
   return { visitors, activationRate, retentionRate, revenueRate, referralRate };
 }
@@ -239,15 +241,7 @@ export default function GrowthFunnelSimulator() {
                 </div>
                 <div className="ml-7 space-y-1">
                   <div className="pb-2 border-b border-slate-100 mb-2">
-                    <Toggle tooltip="Routes acquired referrals back into the funnel as high-intent users" label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => {
-                      setReferral(prev => {
-                        const newValue = !prev.factorReferrals;
-                        if (!newValue) {
-                          return { incentive: false, share: false, factorReferrals: false };
-                        }
-                        return { ...prev, factorReferrals: newValue };
-                      });
-                    }} />
+                    <Toggle tooltip="Routes acquired referrals back into the funnel as high-intent users" label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, factorReferrals: !prev.factorReferrals }))} />
                   </div>
                   <Toggle label="Invite incentive" impact={`+${CONTROL_RATES.referral.incentive} referral`} colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
                   <Toggle label="Share button" impact={`+${CONTROL_RATES.referral.share} referral`} colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
