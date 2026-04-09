@@ -55,7 +55,7 @@ export function computeFunnel(rates: ReturnType<typeof applyModifiers>) {
   const signups = rates.visitors * rates.activationRate;
   const active = signups * rates.retentionRate;
   const paid = active * rates.revenueRate;
-  const referrals = paid * rates.referralRate;
+  const referrals = active * rates.referralRate;
   return { visitors: rates.visitors, signups, active, paid, referrals };
 }
 
@@ -290,6 +290,7 @@ export default function GrowthFunnelSimulator() {
                 dropoff={0}
                 showTopArrow={true}
                 plusvalence={metrics.plusvalence?.referrals}
+                tooltip="Referrals are generated from all active users, not just paid users."
               />
             </div>
           </Card>

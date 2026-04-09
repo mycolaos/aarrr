@@ -1,4 +1,4 @@
-import { Users, UserPlus, Zap, DollarSign, Share2, ArrowDown } from 'lucide-react';
+import { Users, UserPlus, Zap, DollarSign, Share2, ArrowDown, Info } from 'lucide-react';
 import { getColorsForStage } from '../colors';
 
 const stepIcons: Record<string, any> = {
@@ -16,7 +16,8 @@ export const FunnelStep = ({
   dropoff,
   dropoffPercent,
   showTopArrow,
-  plusvalence
+  plusvalence,
+  tooltip
 }: {
   label: string,
   count: number,
@@ -24,7 +25,8 @@ export const FunnelStep = ({
   dropoff?: number,
   dropoffPercent?: number,
   showTopArrow?: boolean,
-  plusvalence?: number
+  plusvalence?: number,
+  tooltip?: string
 }) => {
   const colors = getColorsForStage(label);
   const Icon = stepIcons[label] || Users;
@@ -48,7 +50,18 @@ export const FunnelStep = ({
           <Icon className={`w-6 h-6 ${colors.text}`} />
         </div>
         <div className="flex-1">
-          <h3 className="text-slate-900 font-bold text-[15px]">{label}</h3>
+          <div className="flex items-center">
+            <h3 className="text-slate-900 font-bold text-[15px]">{label}</h3>
+            {tooltip && (
+              <div className="group relative ml-1.5 flex items-center">
+                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help mt-0.5" />
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 w-48 p-2 bg-slate-800 text-[11px] leading-snug font-medium text-white rounded shadow-lg invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity z-10 text-center pointer-events-none">
+                  {tooltip}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-slate-800" />
+                </div>
+              </div>
+            )}
+          </div>
           <div className="flex items-baseline gap-2 mt-1">
             <div className="text-3xl font-extrabold text-slate-900 leading-none">{Math.round(count).toLocaleString()}</div>
             {plusvalence !== undefined && plusvalence > 0 && (
