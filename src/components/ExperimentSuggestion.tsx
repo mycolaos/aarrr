@@ -1,36 +1,44 @@
 import type { LucideIcon } from 'lucide-react';
+import type { FunnelSection } from '../Types';
 
 interface ExperimentSuggestionProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  color: 'green' | 'purple' | 'orange' | 'fuchsia';
+  funnelSection: FunnelSection;
 }
 
-export function ExperimentSuggestion({ icon: Icon, title, description, color }: ExperimentSuggestionProps) {
-  const colorClasses = {
-    green: {
+export function ExperimentSuggestion({ icon: Icon, title, description, funnelSection }: ExperimentSuggestionProps) {
+  const colorClasses: Record<FunnelSection, { border: string; bg: string; hover: string; icon: string; iconBg: string }> = {
+    Acquisition: {
+      border: 'border-blue-100',
+      bg: 'bg-blue-50/30',
+      hover: 'hover:bg-blue-50/80',
+      icon: 'text-blue-600',
+      iconBg: 'bg-blue-100',
+    },
+    Activation: {
       border: 'border-green-100',
       bg: 'bg-green-50/30',
       hover: 'hover:bg-green-50/80',
       icon: 'text-green-600',
       iconBg: 'bg-green-100',
     },
-    purple: {
+    Retention: {
       border: 'border-purple-100',
       bg: 'bg-purple-50/30',
       hover: 'hover:bg-purple-50/80',
       icon: 'text-purple-600',
       iconBg: 'bg-purple-100',
     },
-    orange: {
+    Revenue: {
       border: 'border-orange-100',
       bg: 'bg-orange-50/30',
       hover: 'hover:bg-orange-50/80',
       icon: 'text-orange-600',
       iconBg: 'bg-orange-100',
     },
-    fuchsia: {
+    Referral: {
       border: 'border-fuchsia-100',
       bg: 'bg-fuchsia-50/30',
       hover: 'hover:bg-fuchsia-50/80',
@@ -39,7 +47,7 @@ export function ExperimentSuggestion({ icon: Icon, title, description, color }: 
     },
   };
 
-  const classes = colorClasses[color];
+  const classes = colorClasses[funnelSection];
 
   return (
     <div className={`flex items-start p-3 rounded-xl border ${classes.border} ${classes.bg} ${classes.hover} transition-colors duration-200`}>

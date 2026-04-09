@@ -371,7 +371,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Target}
                   title="Reduce signup friction"
                   description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
-                  color="green"
+                  funnelSection="Activation"
                 />
               )}
 
@@ -380,7 +380,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Target}
                   title="Improve CTA"
                   description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.`}
-                  color="green"
+                  funnelSection="Activation"
                 />
               )}
 
@@ -389,7 +389,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Target}
                   title="Reduce signup friction"
                   description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
-                  color="green"
+                  funnelSection="Activation"
                 />
               )}
 
@@ -398,7 +398,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Rocket}
                   title="Improve onboarding"
                   description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
-                  color="purple"
+                  funnelSection="Retention"
                 />
               )}
 
@@ -407,7 +407,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Rocket}
                   title="Improve onboarding"
                   description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
-                  color="purple"
+                  funnelSection="Retention"
                 />
               )}
 
@@ -416,7 +416,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Mail}
                   title="Try email re-engagement"
                   description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.`}
-                  color="purple"
+                  funnelSection="Retention"
                 />
               )}
 
@@ -425,7 +425,7 @@ export default function GrowthFunnelSimulator() {
                   icon={CircleDollarSign}
                   title="Offer free trial"
                   description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
-                  color="orange"
+                  funnelSection="Revenue"
                 />
               )}
 
@@ -434,7 +434,7 @@ export default function GrowthFunnelSimulator() {
                   icon={CircleDollarSign}
                   title="Offer free trial"
                   description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
-                  color="orange"
+                  funnelSection="Revenue"
                 />
               )}
 
@@ -443,7 +443,7 @@ export default function GrowthFunnelSimulator() {
                   icon={CircleDollarSign}
                   title="Optimize pricing"
                   description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.`}
-                  color="orange"
+                  funnelSection="Revenue"
                 />
               )}
 
@@ -452,7 +452,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Users}
                   title="Add share button"
                   description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
-                  color="fuchsia"
+                  funnelSection="Referral"
                 />
               )}
 
@@ -461,7 +461,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Users}
                   title="Add invite incentive"
                   description={`Referrals could increase by ${CONTROL_RATES.referral.incentive} per user with incentives.`}
-                  color="fuchsia"
+                  funnelSection="Referral"
                 />
               )}
 
@@ -470,7 +470,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Users}
                   title="Add share button"
                   description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
-                  color="fuchsia"
+                  funnelSection="Referral"
                 />
               )}
 
@@ -479,7 +479,7 @@ export default function GrowthFunnelSimulator() {
                   icon={Users}
                   title="Enable referral loop"
                   description="Turn users into referrers for compounding growth."
-                  color="fuchsia"
+                  funnelSection="Referral"
                 />
               )}
 
