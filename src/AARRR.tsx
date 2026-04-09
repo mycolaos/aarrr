@@ -8,7 +8,7 @@ const qualityByChannel: Record<Channel, number> = {
   x: 0.5,
   ads: 1,
   hn: 1.5,
-  referral: 2,
+  referral: 1.5,
 }
 
 const visitorsByChannel: Record<Channel, number> = {
@@ -24,8 +24,8 @@ export const CONTROL_RATES = {
     friction: 0.10,
   },
   retention: {
-    onboarding: 0.15,
-    email: 0.10,
+    onboarding: 0.25,
+    email: 0.15,
   },
   revenue: {
     trial: 0.10,
@@ -33,7 +33,7 @@ export const CONTROL_RATES = {
   },
   referral: {
     incentive: 0.50,
-    share: 1.20,
+    share: 1.0,
   },
 };
 
@@ -46,7 +46,7 @@ export function applyModifiers(state: AppState) {
   if (state.activation.cta) activationRate += CONTROL_RATES.activation.cta;
   if (state.activation.friction) activationRate += CONTROL_RATES.activation.friction;
 
-  let retentionRate = 0.40;
+  let retentionRate = 0.10;
   if (state.retention.onboarding) retentionRate += CONTROL_RATES.retention.onboarding;
   if (state.retention.email) retentionRate += CONTROL_RATES.retention.email;
 
