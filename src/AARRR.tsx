@@ -6,11 +6,11 @@ import { getColorsForStage } from './colors';
 type Channel = 'x' | 'hn' | 'referral' | 'ads';
 
 export type AppState = {
-  acquisition: { channel: Channel; factorReferrals: boolean };
+  acquisition: { channel: Channel };
   activation: { cta: boolean; friction: boolean };
   retention: { onboarding: boolean; email: boolean };
   revenue: { trial: boolean; pricing: boolean };
-  referral: { incentive: boolean; share: boolean };
+  referral: { incentive: boolean; share: boolean; factorReferrals: boolean };
 };
 
 const qualityByChannel: Record<Channel, number> = {
@@ -63,8 +63,8 @@ export function computeTotalFunnel(state: AppState) {
   const baseRates = applyModifiers(state);
   const baseFunnel = computeFunnel(baseRates);
 
-  if (state.acquisition.factorReferrals) {
-    const refState: AppState = { ...state, acquisition: { channel: 'referral', factorReferrals: false } };
+  if (state.referral.factorReferrals) {
+    const refState: AppState = { ...state, acquisition: { channel: 'referral' }, referral: { ...state.referral, factorReferrals: false } };
     const refRates = applyModifiers(refState);
     refRates.visitors = baseFunnel.referrals;
     const refFunnel = computeFunnel(refRates);
@@ -85,12 +85,11 @@ export function computeTotalFunnel(state: AppState) {
 export function getImpact(state: AppState) {
   const currentFunnel = computeTotalFunnel(state);
 
-  const channel = state.acquisition.channel;
-  const baseAcquisitionState = { ...state, acquisition: { channel, factorReferrals: false } };
-  const baseActivationState = { ...state, activation: { cta: false, friction: false } };
-  const baseRetentionState = { ...state, retention: { onboarding: false, email: false } };
-  const baseRevenueState = { ...state, revenue: { trial: false, pricing: false } };
-  const baseReferralState = { ...state, referral: { incentive: false, share: false } };
+  const baseAcquisitionState: AppState = { ...state, acquisition: { channel: 'x' } };
+  const baseActivationState: AppState = { ...state, activation: { cta: false, friction: false } };
+  const baseRetentionState: AppState = { ...state, retention: { onboarding: false, email: false } };
+  const baseRevenueState: AppState = { ...state, revenue: { trial: false, pricing: false } };
+  const baseReferralState: AppState = { ...state, referral: { incentive: false, share: false, factorReferrals: false } };
 
   const deltas = {
     Acquisition: Math.round(currentFunnel.paid - computeTotalFunnel(baseAcquisitionState).paid),
@@ -107,11 +106,11 @@ export function getImpact(state: AppState) {
 
 export default function GrowthFunnelSimulator() {
   // States
-  const [acquisition, setAcquisition] = useState<AppState['acquisition']>({ channel: 'x', factorReferrals: false });
+  const [acquisition, setAcquisition] = useState<AppState['acquisition']>({ channel: 'x' });
   const [activation, setActivation] = useState<AppState['activation']>({ cta: false, friction: false });
   const [retention, setRetention] = useState<AppState['retention']>({ onboarding: false, email: false });
   const [revenue, setRevenue] = useState<AppState['revenue']>({ trial: false, pricing: false });
-  const [referral, setReferral] = useState<AppState['referral']>({ incentive: false, share: false });
+  const [referral, setReferral] = useState<AppState['referral']>({ incentive: false, share: false, factorReferrals: false });
 
   // Calculations
   const metrics = useMemo(() => {
@@ -175,9 +174,6 @@ export default function GrowthFunnelSimulator() {
                     </div>
                     <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition.channel === 'x' ? 'Low quality: Low intent, smaller volume' : acquisition.channel === 'hn' ? 'High quality: Tech audience, large spike' : 'Medium quality: Consistent baseline volume'}</p>
                   </div>
-                  <div className="ml-7 mt-3 border-t border-slate-100 pt-3">
-                    <Toggle label="Factor in referrals" impact="compounding" colorClass="bg-blue-600" active={acquisition.factorReferrals} onClick={() => setAcquisition(prev => ({ ...prev, factorReferrals: !prev.factorReferrals }))} />
-                  </div>
                 </div>
               </div>
 
@@ -231,9 +227,20 @@ export default function GrowthFunnelSimulator() {
                     <p className="text-xs text-slate-500 ml-auto">Turn paying users into referrers</p>
                   </div>
                 </div>
-                <div className="ml-7">
-                  <Toggle label="Invite incentive" impact="+0.3 referral" colorClass="bg-fuchsia-600" active={referral.incentive} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
-                  <Toggle label="Share button" impact="+0.2 referral" colorClass="bg-fuchsia-600" active={referral.share} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
+                <div className="ml-7 space-y-1">
+                  <div className="pb-2 border-b border-slate-100 mb-2">
+                    <Toggle label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => {
+                      setReferral(prev => {
+                        const newValue = !prev.factorReferrals;
+                        if (!newValue) {
+                          return { incentive: false, share: false, factorReferrals: false };
+                        }
+                        return { ...prev, factorReferrals: newValue };
+                      });
+                    }} />
+                  </div>
+                  <Toggle label="Invite incentive" impact="+0.3 referral" colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
+                  <Toggle label="Share button" impact="+0.2 referral" colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
                 </div>
               </div>
 
