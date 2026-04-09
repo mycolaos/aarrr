@@ -2,16 +2,7 @@ import { Card, ExperimentSuggestion, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
 import { getColorsForStage } from './colors';
-
-type Channel = 'x' | 'hn' | 'referral' | 'ads';
-
-export type AppState = {
-  acquisition: { channel: Channel };
-  activation: { cta: boolean; friction: boolean };
-  retention: { onboarding: boolean; email: boolean };
-  revenue: { trial: boolean; pricing: boolean };
-  referral: { incentive: boolean; share: boolean; factorReferrals: boolean };
-};
+import type { AppState, Channel, FunnelSection } from './Types';
 
 const qualityByChannel: Record<Channel, number> = {
   x: 0.5,
@@ -110,7 +101,7 @@ export function getImpact(state: AppState) {
   const baseRevenueState: AppState = { ...state, revenue: { trial: false, pricing: false } };
   const baseReferralState: AppState = { ...state, referral: { incentive: false, share: false, factorReferrals: false } };
 
-  const deltas = {
+  const deltas: Record<FunnelSection, number> = {
     Acquisition: Math.round(currentFunnel.paid - computeTotalFunnel(baseAcquisitionState).paid),
     Activation: Math.round(currentFunnel.paid - computeTotalFunnel(baseActivationState).paid),
     Retention: Math.round(currentFunnel.paid - computeTotalFunnel(baseRetentionState).paid),
@@ -118,7 +109,7 @@ export function getImpact(state: AppState) {
     Referral: Math.round(currentFunnel.paid - computeTotalFunnel(baseReferralState).paid)
   };
 
-  const topInsight = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b, ['None', 0]);
+  const topInsight: [FunnelSection | 'None', number] = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b, ['None', 0]) as [FunnelSection | 'None', number];
 
   return { deltas, topInsight };
 }
@@ -141,7 +132,7 @@ export default function GrowthFunnelSimulator() {
     return { ...rates, ...funnel, deltas, topInsight };
   }, [acquisition, activation, retention, revenue, referral]);
 
-  const topColor = getColorsForStage(metrics.topInsight[0]);
+  const topColor = metrics.topInsight[0] !== 'None' ? getColorsForStage(metrics.topInsight[0]) : getColorsForStage('Acquisition');
 
   return (
     <div className="min-h-screen bg-[#f3f4fa] text-slate-800 font-sans pb-12">
@@ -275,12 +266,12 @@ export default function GrowthFunnelSimulator() {
 
             <div className="flex-1 flex flex-col items-center justify-start w-full px-4">
               <FunnelStep
-                label="Visitors"
+                funnelSection="Acquisition"
                 count={metrics.visitors}
                 plusvalence={metrics.plusvalence?.visitors}
               />
               <FunnelStep
-                label="Signups"
+                funnelSection="Activation"
                 count={metrics.signups}
                 rate={metrics.activationRate}
                 dropoff={metrics.visitors - metrics.signups}
@@ -288,7 +279,7 @@ export default function GrowthFunnelSimulator() {
                 plusvalence={metrics.plusvalence?.signups}
               />
               <FunnelStep
-                label="Active Users"
+                funnelSection="Retention"
                 count={metrics.active}
                 rate={metrics.retentionRate}
                 dropoff={metrics.signups - metrics.active}
@@ -296,7 +287,7 @@ export default function GrowthFunnelSimulator() {
                 plusvalence={metrics.plusvalence?.active}
               />
               <FunnelStep
-                label="Paid Users" // Match the image name "Paid Users"
+                funnelSection="Revenue"
                 count={metrics.paid}
                 rate={metrics.revenueRate}
                 dropoff={metrics.active - metrics.paid}
@@ -304,7 +295,7 @@ export default function GrowthFunnelSimulator() {
                 plusvalence={metrics.plusvalence?.paid}
               />
               <FunnelStep
-                label="Referrals"
+                funnelSection="Referral"
                 count={metrics.referrals}
                 rate={metrics.referralRate}
                 dropoff={0}
@@ -350,7 +341,7 @@ export default function GrowthFunnelSimulator() {
                       <div key={key} className="flex items-center">
                         <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
                         <div className="flex-1 flex items-center h-4 relative">
-                          <div className={`h-2 ${getColorsForStage(key).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: '8px' }}></div>
+                          <div className={`h-2 ${getColorsForStage(key as FunnelSection).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: '8px' }}></div>
                         </div>
                         <div className="w-8 text-right text-sm font-bold text-slate-800">+{val}</div>
                       </div>

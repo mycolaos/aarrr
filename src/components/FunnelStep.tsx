@@ -1,16 +1,25 @@
 import { Users, UserPlus, Zap, DollarSign, Share2, ArrowDown, Info } from 'lucide-react';
 import { getColorsForStage } from '../colors';
+import type { FunnelSection } from '../Types';
 
-const stepIcons: Record<string, any> = {
-  "Visitors": Users,
-  "Signups": UserPlus,
-  "Active Users": Zap,
-  "Paid Users": DollarSign,
-  "Referrals": Share2,
+const stepIcons: Record<FunnelSection, any> = {
+  "Acquisition": Users,
+  "Activation": UserPlus,
+  "Retention": Zap,
+  "Revenue": DollarSign,
+  "Referral": Share2,
+};
+
+const sectionToLabel: Record<FunnelSection, string> = {
+  "Acquisition": "Visitors",
+  "Activation": "Signups",
+  "Retention": "Active Users",
+  "Revenue": "Paid Users",
+  "Referral": "Referrals",
 };
 
 export const FunnelStep = ({
-  label,
+  funnelSection,
   count,
   rate,
   dropoff,
@@ -19,7 +28,7 @@ export const FunnelStep = ({
   plusvalence,
   tooltip
 }: {
-  label: string,
+  funnelSection: FunnelSection,
   count: number,
   rate?: number,
   dropoff?: number,
@@ -28,8 +37,9 @@ export const FunnelStep = ({
   plusvalence?: number,
   tooltip?: string
 }) => {
-  const colors = getColorsForStage(label);
-  const Icon = stepIcons[label] || Users;
+  const label = sectionToLabel[funnelSection];
+  const colors = getColorsForStage(funnelSection);
+  const Icon = stepIcons[funnelSection] || Users;
   const showDropOff = dropoff !== undefined && dropoffPercent !== undefined;
 
   return (
