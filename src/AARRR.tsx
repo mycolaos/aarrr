@@ -229,7 +229,7 @@ export default function GrowthFunnelSimulator() {
                 </div>
                 <div className="ml-7 space-y-1">
                   <div className="pb-2 border-b border-slate-100 mb-2">
-                    <Toggle label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => {
+                    <Toggle tooltip="Routes acquired referrals back into the funnel as high-intent users" label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => {
                       setReferral(prev => {
                         const newValue = !prev.factorReferrals;
                         if (!newValue) {
