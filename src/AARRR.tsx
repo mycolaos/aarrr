@@ -145,7 +145,7 @@ export default function GrowthFunnelSimulator() {
             <TrendingUp className="w-6 h-6" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Simulator</h1>
+            <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Demo</h1>
             <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
           </div>
         </div>
