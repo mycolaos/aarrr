@@ -17,7 +17,7 @@ const qualityByChannel: Record<Channel, number> = {
   x: 0.5,
   ads: 1,
   hn: 1.5,
-  referral: 1.5,
+  referral: 2,
 }
 
 const visitorsByChannel: Record<Channel, number> = {
@@ -97,7 +97,7 @@ export function getImpact(state: AppState) {
     Activation: Math.round(currentFunnel.paid - computeTotalFunnel(baseActivationState).paid),
     Retention: Math.round(currentFunnel.paid - computeTotalFunnel(baseRetentionState).paid),
     Revenue: Math.round(currentFunnel.paid - computeTotalFunnel(baseRevenueState).paid),
-    Referral: Math.round(currentFunnel.referrals - computeTotalFunnel(baseReferralState).referrals)
+    Referral: Math.round(currentFunnel.paid - computeTotalFunnel(baseReferralState).paid)
   };
 
   const topInsight = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b, ['None', 0]);
