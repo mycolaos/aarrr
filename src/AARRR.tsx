@@ -375,34 +375,106 @@ export default function GrowthFunnelSimulator() {
             <p className="text-xs text-slate-500 mb-5">Based on existing funnel opportunities</p>
 
             <div className="flex flex-col gap-3">
-              <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
-                <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
-                <div className="ml-3">
-                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Reduce signup friction</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by 10-20% with a simpler flow.</p>
+              {!activation.cta && (
+                <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
+                  <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve CTA</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by {Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.</p>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
-                <Rocket className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
-                <div className="ml-3">
-                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve onboarding</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">Activation is your biggest lever. Small gains = big impact.</p>
+              {!activation.friction && (
+                <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
+                  <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Reduce signup friction</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by {Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.</p>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
-                <Mail className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
-                <div className="ml-3">
-                  <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Try email re-engagement</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">Win back inactive users with a simple email sequence.</p>
+              {!retention.onboarding && (
+                <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
+                  <Rocket className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve onboarding</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Activation could improve by {Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.</p>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {!retention.email && (
+                <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
+                  <Mail className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Try email re-engagement</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Activation could improve by {Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.</p>
+                  </div>
+                </div>
+              )}
+
+              {!revenue.trial && (
+                <div className="flex items-start p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/80 transition-colors duration-200">
+                  <CircleDollarSign className="w-8 h-8 text-orange-600 mt-0.5 shrink-0 bg-orange-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Offer free trial</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Revenue could improve by {Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.</p>
+                  </div>
+                </div>
+              )}
+
+              {!revenue.pricing && (
+                <div className="flex items-start p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/80 transition-colors duration-200">
+                  <CircleDollarSign className="w-8 h-8 text-orange-600 mt-0.5 shrink-0 bg-orange-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Optimize pricing</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Revenue could improve by {Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.</p>
+                  </div>
+                </div>
+              )}
+
+              {referral.factorReferrals && !referral.incentive && (
+                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
+                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Add invite incentive</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Referrals could increase by {CONTROL_RATES.referral.incentive} per user with incentives.</p>
+                  </div>
+                </div>
+              )}
+
+              {referral.factorReferrals && !referral.share && (
+                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
+                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Add share button</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Referrals could increase by {CONTROL_RATES.referral.share} per user with easy sharing.</p>
+                  </div>
+                </div>
+              )}
+
+              {!referral.factorReferrals && (
+                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
+                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
+                  <div className="ml-3">
+                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Enable referral loop</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">Turn users into referrers for compounding growth.</p>
+                  </div>
+                </div>
+              )}
+
+              {activation.cta && activation.friction && retention.onboarding && retention.email && revenue.trial && revenue.pricing && referral.factorReferrals && referral.incentive && referral.share && (
+                <div className="flex items-center justify-center p-6 rounded-xl border border-slate-100 bg-slate-50/50">
+                  <p className="text-sm text-slate-500 font-medium">All experiments enabled! Great job.</p>
+                </div>
+              )}
             </div>
           </Card>
         </section>
 
       </main>
     </div>
-  );
+  )
 }
