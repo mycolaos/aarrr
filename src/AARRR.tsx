@@ -277,6 +277,7 @@ export default function GrowthFunnelSimulator() {
               <FunnelStep
                 label="Visitors"
                 count={metrics.visitors}
+                plusvalence={metrics.plusvalence?.visitors}
               />
               <FunnelStep
                 label="Signups"
