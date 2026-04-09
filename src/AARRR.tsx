@@ -1,4 +1,4 @@
-import { Card, FunnelStep, Toggle } from './components';
+import { Card, ExperimentSuggestion, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
 import { getColorsForStage } from './colors';
@@ -376,133 +376,120 @@ export default function GrowthFunnelSimulator() {
 
             <div className="flex flex-col gap-3">
               {!activation.cta && !activation.friction && (
-                <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
-                  <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Reduce signup friction</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by {Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Target}
+                  title="Reduce signup friction"
+                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
+                  color="green"
+                />
               )}
 
               {!activation.cta && activation.friction && (
-                <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
-                  <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve CTA</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by {Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Target}
+                  title="Improve CTA"
+                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.`}
+                  color="green"
+                />
               )}
 
               {activation.cta && !activation.friction && (
-                <div className="flex items-start p-3 rounded-xl border border-green-100 bg-green-50/30 hover:bg-green-50/80 transition-colors duration-200">
-                  <Target className="w-8 h-8 text-green-600 mt-0.5 shrink-0 bg-green-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Reduce signup friction</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Signup rate could improve by {Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Target}
+                  title="Reduce signup friction"
+                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
+                  color="green"
+                />
               )}
 
               {!retention.onboarding && !retention.email && (
-                <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
-                  <Rocket className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve onboarding</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Activation could improve by {Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Rocket}
+                  title="Improve onboarding"
+                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
+                  color="purple"
+                />
               )}
 
               {!retention.onboarding && retention.email && (
-                <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
-                  <Rocket className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Improve onboarding</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Activation could improve by {Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Rocket}
+                  title="Improve onboarding"
+                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
+                  color="purple"
+                />
               )}
 
               {retention.onboarding && !retention.email && (
-                <div className="flex items-start p-3 rounded-xl border border-purple-100 bg-purple-50/30 hover:bg-purple-50/80 transition-colors duration-200">
-                  <Mail className="w-8 h-8 text-purple-600 mt-0.5 shrink-0 bg-purple-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Try email re-engagement</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Activation could improve by {Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Mail}
+                  title="Try email re-engagement"
+                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.`}
+                  color="purple"
+                />
               )}
 
               {!revenue.trial && !revenue.pricing && (
-                <div className="flex items-start p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/80 transition-colors duration-200">
-                  <CircleDollarSign className="w-8 h-8 text-orange-600 mt-0.5 shrink-0 bg-orange-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Offer free trial</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Revenue could improve by {Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={CircleDollarSign}
+                  title="Offer free trial"
+                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
+                  color="orange"
+                />
               )}
 
               {!revenue.trial && revenue.pricing && (
-                <div className="flex items-start p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/80 transition-colors duration-200">
-                  <CircleDollarSign className="w-8 h-8 text-orange-600 mt-0.5 shrink-0 bg-orange-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Offer free trial</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Revenue could improve by {Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={CircleDollarSign}
+                  title="Offer free trial"
+                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
+                  color="orange"
+                />
               )}
 
               {revenue.trial && !revenue.pricing && (
-                <div className="flex items-start p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/80 transition-colors duration-200">
-                  <CircleDollarSign className="w-8 h-8 text-orange-600 mt-0.5 shrink-0 bg-orange-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Optimize pricing</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Revenue could improve by {Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={CircleDollarSign}
+                  title="Optimize pricing"
+                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.`}
+                  color="orange"
+                />
               )}
 
               {referral.factorReferrals && !referral.incentive && !referral.share && (
-                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
-                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Add share button</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Referrals could increase by {CONTROL_RATES.referral.share} per user with easy sharing.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Users}
+                  title="Add share button"
+                  description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
+                  color="fuchsia"
+                />
               )}
 
               {referral.factorReferrals && !referral.incentive && referral.share && (
-                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
-                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Add invite incentive</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Referrals could increase by {CONTROL_RATES.referral.incentive} per user with incentives.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Users}
+                  title="Add invite incentive"
+                  description={`Referrals could increase by ${CONTROL_RATES.referral.incentive} per user with incentives.`}
+                  color="fuchsia"
+                />
               )}
 
               {referral.factorReferrals && referral.incentive && !referral.share && (
-                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
-                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Add share button</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Referrals could increase by {CONTROL_RATES.referral.share} per user with easy sharing.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Users}
+                  title="Add share button"
+                  description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
+                  color="fuchsia"
+                />
               )}
 
               {!referral.factorReferrals && (
-                <div className="flex items-start p-3 rounded-xl border border-fuchsia-100 bg-fuchsia-50/30 hover:bg-fuchsia-50/80 transition-colors duration-200">
-                  <Users className="w-8 h-8 text-fuchsia-600 mt-0.5 shrink-0 bg-fuchsia-100 p-2 rounded-full" />
-                  <div className="ml-3">
-                    <h4 className="font-semibold text-sm text-slate-900 mb-0.5">Enable referral loop</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">Turn users into referrers for compounding growth.</p>
-                  </div>
-                </div>
+                <ExperimentSuggestion
+                  icon={Users}
+                  title="Enable referral loop"
+                  description="Turn users into referrers for compounding growth."
+                  color="fuchsia"
+                />
               )}
 
               {activation.cta && activation.friction && retention.onboarding && retention.email && revenue.trial && revenue.pricing && referral.factorReferrals && referral.incentive && referral.share && (
