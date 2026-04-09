@@ -27,26 +27,45 @@ const visitorsByChannel: Record<Channel, number> = {
   referral: 0,
 }
 
+export const CONTROL_RATES = {
+  activation: {
+    cta: 0.05,
+    friction: 0.10,
+  },
+  retention: {
+    onboarding: 0.15,
+    email: 0.10,
+  },
+  revenue: {
+    trial: 0.10,
+    pricing: 0.05,
+  },
+  referral: {
+    incentive: 0.50,
+    share: 1.20,
+  },
+};
+
 export function applyModifiers(state: AppState) {
   const channel = state.acquisition.channel;
   const visitors = visitorsByChannel[channel];
   const qualityFactor = qualityByChannel[channel];
 
   let activationRate = 0.20 * qualityFactor;
-  if (state.activation.cta) activationRate += 0.05;
-  if (state.activation.friction) activationRate += 0.10;
+  if (state.activation.cta) activationRate += CONTROL_RATES.activation.cta;
+  if (state.activation.friction) activationRate += CONTROL_RATES.activation.friction;
 
   let retentionRate = 0.40;
-  if (state.retention.onboarding) retentionRate += 0.15;
-  if (state.retention.email) retentionRate += 0.10;
+  if (state.retention.onboarding) retentionRate += CONTROL_RATES.retention.onboarding;
+  if (state.retention.email) retentionRate += CONTROL_RATES.retention.email;
 
   let revenueRate = 0.20;
-  if (state.revenue.trial) revenueRate += 0.10;
-  if (state.revenue.pricing) revenueRate += 0.05;
+  if (state.revenue.trial) revenueRate += CONTROL_RATES.revenue.trial;
+  if (state.revenue.pricing) revenueRate += CONTROL_RATES.revenue.pricing;
 
   let referralRate = 0.50;
-  if (state.referral.incentive) referralRate += 0.30;
-  if (state.referral.share) referralRate += 0.20;
+  if (state.referral.incentive) referralRate += CONTROL_RATES.referral.incentive;
+  if (state.referral.share) referralRate += CONTROL_RATES.referral.share;
 
   return { visitors, activationRate, retentionRate, revenueRate, referralRate };
 }
@@ -186,8 +205,8 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Improve CTA" impact="+5% signup" colorClass="bg-green-600" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
-                  <Toggle label="Reduce friction" impact="+10% signup" colorClass="bg-green-600" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
+                  <Toggle label="Improve CTA" impact={`+${Math.round(CONTROL_RATES.activation.cta * 100)}% signup`} colorClass="bg-green-600" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
+                  <Toggle label="Reduce friction" impact={`+${Math.round(CONTROL_RATES.activation.friction * 100)}% signup`} colorClass="bg-green-600" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
                 </div>
               </div>
 
@@ -200,8 +219,8 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Better onboarding" impact="+15% activation" colorClass="bg-purple-600" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
-                  <Toggle label="Email reminders" impact="+10% activation" colorClass="bg-purple-600" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
+                  <Toggle label="Better onboarding" impact={`+${Math.round(CONTROL_RATES.retention.onboarding * 100)}% activation`} colorClass="bg-purple-600" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
+                  <Toggle label="Email reminders" impact={`+${Math.round(CONTROL_RATES.retention.email * 100)}% activation`} colorClass="bg-purple-600" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
                 </div>
               </div>
 
@@ -214,8 +233,8 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Free trial" impact="+10% paid" colorClass="bg-orange-600" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
-                  <Toggle label="Better pricing" impact="+5% paid" colorClass="bg-orange-600" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
+                  <Toggle label="Free trial" impact={`+${Math.round(CONTROL_RATES.revenue.trial * 100)}% paid`} colorClass="bg-orange-600" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
+                  <Toggle label="Better pricing" impact={`+${Math.round(CONTROL_RATES.revenue.pricing * 100)}% paid`} colorClass="bg-orange-600" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
                 </div>
               </div>
 
@@ -239,8 +258,8 @@ export default function GrowthFunnelSimulator() {
                       });
                     }} />
                   </div>
-                  <Toggle label="Invite incentive" impact="+0.3 referral" colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
-                  <Toggle label="Share button" impact="+0.2 referral" colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
+                  <Toggle label="Invite incentive" impact={`+${CONTROL_RATES.referral.incentive} referral`} colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
+                  <Toggle label="Share button" impact={`+${CONTROL_RATES.referral.share} referral`} colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
                 </div>
               </div>
 
