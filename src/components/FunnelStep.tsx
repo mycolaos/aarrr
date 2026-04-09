@@ -15,14 +15,16 @@ export const FunnelStep = ({
   rate,
   dropoff,
   dropoffPercent,
-  showTopArrow
+  showTopArrow,
+  plusvalence
 }: {
   label: string,
   count: number,
   rate?: number,
   dropoff?: number,
   dropoffPercent?: number,
-  showTopArrow?: boolean
+  showTopArrow?: boolean,
+  plusvalence?: number
 }) => {
   const colors = getColorsForStage(label);
   const Icon = stepIcons[label] || Users;
@@ -47,8 +49,14 @@ export const FunnelStep = ({
         </div>
         <div className="flex-1">
           <h3 className="text-slate-900 font-bold text-[15px]">{label}</h3>
-          <div className="text-3xl font-extrabold text-slate-900 mt-1 leading-none">{Math.round(count).toLocaleString()}</div>
-
+          <div className="flex items-baseline gap-2 mt-1">
+            <div className="text-3xl font-extrabold text-slate-900 leading-none">{Math.round(count).toLocaleString()}</div>
+            {plusvalence !== undefined && plusvalence > 0 && (
+              <div className="text-[11px] font-bold text-blue-600 bg-blue-50/80 border border-blue-100 px-1.5 py-0.5 rounded-full shadow-sm flex items-center">
+                +{Math.round(plusvalence).toLocaleString()} from referrals
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="text-right flex flex-col items-end justify-center h-full">

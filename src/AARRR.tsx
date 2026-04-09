@@ -3,19 +3,34 @@ import { useMemo, useState } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
 import { getColorsForStage } from './colors';
 
+type Channel = 'x' | 'hn' | 'referral' | 'ads';
+
 export type AppState = {
-  acquisition: string;
+  acquisition: { channel: Channel; factorReferrals: boolean };
   activation: { cta: boolean; friction: boolean };
   retention: { onboarding: boolean; email: boolean };
   revenue: { trial: boolean; pricing: boolean };
   referral: { incentive: boolean; share: boolean };
 };
 
-const baseVisitors = 1000;
+const qualityByChannel: Record<Channel, number> = {
+  x: 0.5,
+  ads: 1,
+  hn: 1.5,
+  referral: 1.5,
+}
+
+const visitorsByChannel: Record<Channel, number> = {
+  x: 1000,
+  hn: 1500,
+  ads: 3000,
+  referral: 0,
+}
 
 export function applyModifiers(state: AppState) {
-  const visitors = state.acquisition === 'Ads' ? 3000 : state.acquisition === 'Hacker News' ? 1500 : baseVisitors;
-  const qualityFactor = state.acquisition === 'Hacker News' ? 1.5 : state.acquisition === 'X post' ? 0.5 : 1.0;
+  const channel = state.acquisition.channel;
+  const visitors = visitorsByChannel[channel];
+  const qualityFactor = qualityByChannel[channel];
 
   let activationRate = 0.20 * qualityFactor;
   if (state.activation.cta) activationRate += 0.05;
@@ -44,22 +59,45 @@ export function computeFunnel(rates: ReturnType<typeof applyModifiers>) {
   return { visitors: rates.visitors, signups, active, paid, referrals };
 }
 
-export function getImpact(state: AppState) {
-  const currentRates = applyModifiers(state);
-  const currentFunnel = computeFunnel(currentRates);
+export function computeTotalFunnel(state: AppState) {
+  const baseRates = applyModifiers(state);
+  const baseFunnel = computeFunnel(baseRates);
 
-  const baseAcquisitionRates = applyModifiers({ ...state, acquisition: 'X post' });
-  const baseActivationRates = applyModifiers({ ...state, activation: { cta: false, friction: false } });
-  const baseRetentionRates = applyModifiers({ ...state, retention: { onboarding: false, email: false } });
-  const baseRevenueRates = applyModifiers({ ...state, revenue: { trial: false, pricing: false } });
-  const baseReferralRates = applyModifiers({ ...state, referral: { incentive: false, share: false } });
+  if (state.acquisition.factorReferrals) {
+    const refState: AppState = { ...state, acquisition: { channel: 'referral', factorReferrals: false } };
+    const refRates = applyModifiers(refState);
+    refRates.visitors = baseFunnel.referrals;
+    const refFunnel = computeFunnel(refRates);
+
+    return {
+      visitors: baseFunnel.visitors + refFunnel.visitors,
+      signups: baseFunnel.signups + refFunnel.signups,
+      active: baseFunnel.active + refFunnel.active,
+      paid: baseFunnel.paid + refFunnel.paid,
+      referrals: baseFunnel.referrals + refFunnel.referrals,
+      plusvalence: refFunnel
+    };
+  }
+
+  return { ...baseFunnel, plusvalence: null };
+}
+
+export function getImpact(state: AppState) {
+  const currentFunnel = computeTotalFunnel(state);
+
+  const channel = state.acquisition.channel;
+  const baseAcquisitionState = { ...state, acquisition: { channel, factorReferrals: false } };
+  const baseActivationState = { ...state, activation: { cta: false, friction: false } };
+  const baseRetentionState = { ...state, retention: { onboarding: false, email: false } };
+  const baseRevenueState = { ...state, revenue: { trial: false, pricing: false } };
+  const baseReferralState = { ...state, referral: { incentive: false, share: false } };
 
   const deltas = {
-    Acquisition: Math.round(currentFunnel.paid - computeFunnel(baseAcquisitionRates).paid),
-    Activation: Math.round(currentFunnel.paid - computeFunnel(baseActivationRates).paid),
-    Retention: Math.round(currentFunnel.paid - computeFunnel(baseRetentionRates).paid),
-    Revenue: Math.round(currentFunnel.paid - computeFunnel(baseRevenueRates).paid),
-    Referral: Math.round(currentFunnel.referrals - computeFunnel(baseReferralRates).referrals)
+    Acquisition: Math.round(currentFunnel.paid - computeTotalFunnel(baseAcquisitionState).paid),
+    Activation: Math.round(currentFunnel.paid - computeTotalFunnel(baseActivationState).paid),
+    Retention: Math.round(currentFunnel.paid - computeTotalFunnel(baseRetentionState).paid),
+    Revenue: Math.round(currentFunnel.paid - computeTotalFunnel(baseRevenueState).paid),
+    Referral: Math.round(currentFunnel.referrals - computeTotalFunnel(baseReferralState).referrals)
   };
 
   const topInsight = Object.entries(deltas).reduce((a, b) => a[1] > b[1] ? a : b, ['None', 0]);
@@ -69,17 +107,17 @@ export function getImpact(state: AppState) {
 
 export default function GrowthFunnelSimulator() {
   // States
-  const [acquisition, setAcquisition] = useState('X post');
-  const [activation, setActivation] = useState({ cta: false, friction: false });
-  const [retention, setRetention] = useState({ onboarding: false, email: false });
-  const [revenue, setRevenue] = useState({ trial: false, pricing: false });
-  const [referral, setReferral] = useState({ incentive: false, share: false });
+  const [acquisition, setAcquisition] = useState<AppState['acquisition']>({ channel: 'x', factorReferrals: false });
+  const [activation, setActivation] = useState<AppState['activation']>({ cta: false, friction: false });
+  const [retention, setRetention] = useState<AppState['retention']>({ onboarding: false, email: false });
+  const [revenue, setRevenue] = useState<AppState['revenue']>({ trial: false, pricing: false });
+  const [referral, setReferral] = useState<AppState['referral']>({ incentive: false, share: false });
 
   // Calculations
   const metrics = useMemo(() => {
     const state = { acquisition, activation, retention, revenue, referral };
     const rates = applyModifiers(state);
-    const funnel = computeFunnel(rates);
+    const funnel = computeTotalFunnel(state);
     const { deltas, topInsight } = getImpact(state);
 
     return { ...rates, ...funnel, deltas, topInsight };
@@ -124,18 +162,21 @@ export default function GrowthFunnelSimulator() {
                     <div className="relative">
                       <select
                         className="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-lg text-sm bg-white appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-colors"
-                        value={acquisition}
-                        onChange={(e) => setAcquisition(e.target.value)}
+                        value={acquisition.channel}
+                        onChange={(e) => setAcquisition(prev => ({ ...prev, channel: e.target.value as Channel }))}
                       >
-                        <option value="X post">X (default)</option>
-                        <option value="Hacker News">Hacker News</option>
-                        <option value="Ads">Paid Ads</option>
+                        <option value="x">X (default)</option>
+                        <option value="hn">Hacker News</option>
+                        <option value="ads">Paid Ads</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                       </div>
                     </div>
-                    <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition === 'X post' ? 'Low quality: Low intent, smaller volume' : acquisition === 'Hacker News' ? 'High quality: Tech audience, large spike' : 'Medium quality: Consistent baseline volume'}</p>
+                    <p className="text-xs text-blue-600 mt-1 pl-1 font-medium">{acquisition.channel === 'x' ? 'Low quality: Low intent, smaller volume' : acquisition.channel === 'hn' ? 'High quality: Tech audience, large spike' : 'Medium quality: Consistent baseline volume'}</p>
+                  </div>
+                  <div className="ml-7 mt-3 border-t border-slate-100 pt-3">
+                    <Toggle label="Factor in referrals" impact="compounding" colorClass="bg-blue-600" active={acquisition.factorReferrals} onClick={() => setAcquisition(prev => ({ ...prev, factorReferrals: !prev.factorReferrals }))} />
                   </div>
                 </div>
               </div>
@@ -217,6 +258,7 @@ export default function GrowthFunnelSimulator() {
                 rate={metrics.activationRate}
                 dropoff={metrics.visitors - metrics.signups}
                 dropoffPercent={((metrics.visitors - metrics.signups) / metrics.visitors) * 100}
+                plusvalence={metrics.plusvalence?.signups}
               />
               <FunnelStep
                 label="Active Users"
@@ -224,6 +266,7 @@ export default function GrowthFunnelSimulator() {
                 rate={metrics.retentionRate}
                 dropoff={metrics.signups - metrics.active}
                 dropoffPercent={((metrics.signups - metrics.active) / metrics.signups) * 100}
+                plusvalence={metrics.plusvalence?.active}
               />
               <FunnelStep
                 label="Paid Users" // Match the image name "Paid Users"
@@ -231,6 +274,7 @@ export default function GrowthFunnelSimulator() {
                 rate={metrics.revenueRate}
                 dropoff={metrics.active - metrics.paid}
                 dropoffPercent={((metrics.active - metrics.paid) / metrics.active) * 100}
+                plusvalence={metrics.plusvalence?.paid}
               />
               <FunnelStep
                 label="Referrals"
@@ -238,6 +282,7 @@ export default function GrowthFunnelSimulator() {
                 rate={metrics.referralRate}
                 dropoff={0}
                 showTopArrow={true}
+                plusvalence={metrics.plusvalence?.referrals}
               />
             </div>
           </Card>
