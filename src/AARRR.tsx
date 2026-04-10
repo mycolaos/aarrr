@@ -221,10 +221,10 @@ export default function GrowthFunnelSimulator() {
         </div>
       </header>
 
-      <main className={`mx-auto px-10 grid gap-8 ${variant === 'without_insight' ? 'max-w-[1000px] grid-cols-16' : 'max-w-[1440px] grid-cols-24'}`}>
+      <main className={`mx-auto px-10 flex flex-wrap gap-8 ${variant === 'without_insight' ? 'max-w-[1000px]' : 'max-w-[1440px]'}`}>
 
         {/* Left Column: Controls */}
-        <section className="col-span-24 lg:col-span-7">
+        <section className="w-full lg:w-auto min-w-[300px] flex-[1_1_30%]">
           <Card className="p-0 overflow-hidden">
             <div className="p-4 border-b border-slate-100 bg-white">
               <h2 className="text-xl font-bold text-slate-800">Controls</h2>
@@ -373,7 +373,7 @@ export default function GrowthFunnelSimulator() {
         </section>
 
         {/* Center Column: Funnel */}
-        <section className="col-span-24 lg:col-span-9 flex flex-col">
+        <section className="w-full lg:w-auto flex-[1_1_30%] flex flex-col">
           <Card className="p-6 h-full flex flex-col bg-white">
             <h2 className="text-xl font-bold text-slate-800 mb-1">Funnel Overview</h2>
             <p className="text-sm text-slate-500 mb-6">Live results based on your selections</p>
@@ -423,7 +423,7 @@ export default function GrowthFunnelSimulator() {
 
         {/* Right Column: Insights */}
         {variant === 'with_insight' && (
-          <section className="col-span-24 lg:col-span-8 flex flex-col gap-6">
+          <section className="w-full lg:w-auto flex-[1_1_30%] flex flex-col gap-6">
             <Card className="p-6 flex-1 flex flex-col bg-white">
               <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
               <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
