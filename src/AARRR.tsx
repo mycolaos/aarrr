@@ -171,6 +171,9 @@ export default function GrowthFunnelSimulator() {
             </button>
             <button
               onClick={() => {
+                mixpanel.track('share_clicked', {
+                  method: navigator.share ? 'native_share' : 'clipboard',
+                });
                 if (navigator.share) {
                   navigator.share({
                     title: 'Growth Funnel Demo',
