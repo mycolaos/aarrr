@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2, HelpCircle } from 'lucide-react';
 import { getColorsForStage } from './colors';
 import type { AppState, Channel, FunnelSection } from './Types';
-import mixpanel from "mixpanel-browser";
+import { getABTestVariant, trackEvent, setABTestVariant } from './mixpanelUtils';
 
 const qualityByChannel: Record<Channel, number> = {
   x: 0.5,
@@ -118,7 +118,7 @@ export function getImpact(state: AppState) {
 }
 
 function trackControlChange(type: string, control: string, value?: string, enabled?: boolean) {
-  mixpanel.track('control_changed', {
+  trackEvent('control_changed', {
     type,
     control,
     ...(value !== undefined && { value }),
@@ -136,11 +136,11 @@ export default function GrowthFunnelSimulator() {
   const [retention, setRetention] = useState<AppState['retention']>({ onboarding: false, email: false });
   const [revenue, setRevenue] = useState<AppState['revenue']>({ trial: false, pricing: false });
   const [referral, setReferral] = useState<AppState['referral']>({ incentive: false, share: false, factorReferrals: false });
-
+  const [variant, setVariant] = useState(() => getABTestVariant());
 
   useEffect(() => {
     if (highlightShareButton) {
-      mixpanel.track('share_button_highlighted');
+      trackEvent('share_button_highlighted');
     }
   }, [highlightShareButton]);
 
@@ -159,7 +159,7 @@ export default function GrowthFunnelSimulator() {
   return (
     <div className="min-h-screen bg-[#f3f4fa] text-slate-800 font-sans pb-12">
       {/* 1. Header */}
-      <header className="max-w-[1440px] mx-auto px-10 py-10 flex flex-col justify-center">
+      <header className={`mx-auto px-10 py-10 flex flex-col justify-center ${variant === 'without_insight' ? 'max-w-[1000px]' : 'max-w-[1440px]'}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <div className="bg-blue-600 text-white p-2.5 rounded-[12px] shadow-sm">
@@ -171,9 +171,22 @@ export default function GrowthFunnelSimulator() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {import.meta.env.DEV && (
+              <button
+                onClick={() => {
+                  const newVariant = variant === 'with_insight' ? 'without_insight' : 'with_insight';
+                  setABTestVariant(newVariant);
+                  setVariant(newVariant);
+                }}
+                className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-sm font-medium text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition-colors shadow-sm"
+              >
+                <RefreshCcw className="w-4 h-4" />
+                Switch to {variant === 'with_insight' ? 'without' : 'with'} insight
+              </button>
+            )}
             <button
               onClick={() => {
-                mixpanel.track('what_is_this_clicked');
+                trackEvent('what_is_this_clicked');
                 setShowAbout(true);
               }}
               className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
@@ -183,7 +196,7 @@ export default function GrowthFunnelSimulator() {
             </button>
             <button
               onClick={() => {
-                mixpanel.track('share_clicked', {
+                trackEvent('share_clicked', {
                   method: navigator.share ? 'native_share' : 'clipboard',
                 });
                 if (navigator.share) {
@@ -205,7 +218,7 @@ export default function GrowthFunnelSimulator() {
         </div>
       </header>
 
-      <main className="max-w-[1440px] mx-auto px-10 grid grid-cols-24 gap-8">
+      <main className={`mx-auto px-10 grid gap-8 ${variant === 'without_insight' ? 'max-w-[1000px] grid-cols-16' : 'max-w-[1440px] grid-cols-24'}`}>
 
         {/* Left Column: Controls */}
         <section className="col-span-24 lg:col-span-7">
@@ -406,189 +419,191 @@ export default function GrowthFunnelSimulator() {
         </section>
 
         {/* Right Column: Insights */}
-        <section className="col-span-24 lg:col-span-8 flex flex-col gap-6">
-          <Card className="p-6 flex-1 flex flex-col bg-white">
-            <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
-            <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
+        {variant === 'with_insight' && (
+          <section className="col-span-24 lg:col-span-8 flex flex-col gap-6">
+            <Card className="p-6 flex-1 flex flex-col bg-white">
+              <h2 className="text-xl font-bold text-slate-800 mb-1">Insights</h2>
+              <p className="text-sm text-slate-500 mb-6">What's driving your results?</p>
 
-            {metrics.topInsight[1] > 0 && (
-              <div className={`${topColor.bg} border ${topColor.border} rounded-xl p-5 relative overflow-hidden mb-8`}>
-                <div className={`absolute top-4 right-4 ${topColor.badge} text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider`}>
-                  Most Critical
+              {metrics.topInsight[1] > 0 && (
+                <div className={`${topColor.bg} border ${topColor.border} rounded-xl p-5 relative overflow-hidden mb-8`}>
+                  <div className={`absolute top-4 right-4 ${topColor.badge} text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider`}>
+                    Most Critical
+                  </div>
+                  <Lightbulb className={`${topColor.icon} w-8 h-8 mb-4 stroke-[1.5]`} />
+                  <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
+                  <div className="flex items-end mb-3 mt-2">
+                    <span className={`text-4xl font-bold ${topColor.text} leading-none`}>+{metrics.topInsight[1]}</span>
+                    <span className={`text-xl ${topColor.text} ml-2 font-medium`}>paid users</span>
+                  </div>
+                  <p className="text-sm text-slate-600 font-medium">
+                    If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
+                  </p>
                 </div>
-                <Lightbulb className={`${topColor.icon} w-8 h-8 mb-4 stroke-[1.5]`} />
-                <h3 className="text-xl font-bold text-slate-900 mb-1">{metrics.topInsight[0]}</h3>
-                <div className="flex items-end mb-3 mt-2">
-                  <span className={`text-4xl font-bold ${topColor.text} leading-none`}>+{metrics.topInsight[1]}</span>
-                  <span className={`text-xl ${topColor.text} ml-2 font-medium`}>paid users</span>
-                </div>
-                <p className="text-sm text-slate-600 font-medium">
-                  If we removed {metrics.topInsight[0].toLowerCase()} improvements, you'd have {metrics.topInsight[1]} fewer paid users.
-                </p>
-              </div>
-            )}
+              )}
 
-            {metrics.topInsight[1] > 0 ? (
-              <div>
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center">Impact by Step <span className="text-slate-400 font-normal ml-1 text-sm">(paid users)</span></h3>
-                <div className="space-y-4">
-                  {Object.entries(metrics.deltas)
-                    .filter(([, val]) => val > 0)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([key, val]) => (
-                      <div key={key} className="flex items-center">
-                        <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
-                        <div className="flex-1 flex items-center h-4 relative">
-                          <div className={`h-2 ${getColorsForStage(key as FunnelSection).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: '8px' }}></div>
+              {metrics.topInsight[1] > 0 ? (
+                <div>
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center">Impact by Step <span className="text-slate-400 font-normal ml-1 text-sm">(paid users)</span></h3>
+                  <div className="space-y-4">
+                    {Object.entries(metrics.deltas)
+                      .filter(([, val]) => val > 0)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([key, val]) => (
+                        <div key={key} className="flex items-center">
+                          <div className="w-24 text-sm font-medium text-slate-700">{key}</div>
+                          <div className="flex-1 flex items-center h-4 relative">
+                            <div className={`h-2 ${getColorsForStage(key as FunnelSection).badge} rounded-full`} style={{ width: `${Math.max(4, (val / metrics.topInsight[1]) * 100)}%`, minWidth: '8px' }}></div>
+                          </div>
+                          <div className="w-8 text-right text-sm font-bold text-slate-800">+{val}</div>
                         </div>
-                        <div className="w-8 text-right text-sm font-bold text-slate-800">+{val}</div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-6 pt-4 border-t border-slate-100">
+                    Calculated by comparing current state vs. removing each improvement.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-400 mt-6 pt-4 border-t border-slate-100">
-                  Calculated by comparing current state vs. removing each improvement.
-                </p>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-400 mt-8">
-                <Lightbulb className="w-12 h-12 mb-3 text-slate-200" />
-                <p className="text-sm font-medium text-slate-500">No impact to show yet</p>
-                <p className="text-xs mt-1">Enable improvements to see their impact here.</p>
-              </div>
-            )}
-          </Card>
-
-          {/* Bottom Section: What I'd Test Next */}
-          <Card className="p-5 bg-white shrink-0">
-            <h2 className="text-lg font-bold text-slate-800 mb-1">What to Test Next</h2>
-            <p className="text-xs text-slate-500 mb-5">Based on existing funnel opportunities</p>
-
-            <div className="flex flex-col gap-3">
-              {!activation.cta && !activation.friction && (
-                <ExperimentSuggestion
-                  icon={Target}
-                  title="Reduce signup friction"
-                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
-                  funnelSection="Activation"
-                />
-              )}
-
-              {!activation.cta && activation.friction && (
-                <ExperimentSuggestion
-                  icon={Target}
-                  title="Improve CTA"
-                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.`}
-                  funnelSection="Activation"
-                />
-              )}
-
-              {activation.cta && !activation.friction && (
-                <ExperimentSuggestion
-                  icon={Target}
-                  title="Reduce signup friction"
-                  description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
-                  funnelSection="Activation"
-                />
-              )}
-
-              {!retention.onboarding && !retention.email && (
-                <ExperimentSuggestion
-                  icon={Rocket}
-                  title="Improve onboarding"
-                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
-                  funnelSection="Retention"
-                />
-              )}
-
-              {!retention.onboarding && retention.email && (
-                <ExperimentSuggestion
-                  icon={Rocket}
-                  title="Improve onboarding"
-                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
-                  funnelSection="Retention"
-                />
-              )}
-
-              {retention.onboarding && !retention.email && (
-                <ExperimentSuggestion
-                  icon={Mail}
-                  title="Try email re-engagement"
-                  description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.`}
-                  funnelSection="Retention"
-                />
-              )}
-
-              {!revenue.trial && !revenue.pricing && (
-                <ExperimentSuggestion
-                  icon={CircleDollarSign}
-                  title="Offer free trial"
-                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
-                  funnelSection="Revenue"
-                />
-              )}
-
-              {!revenue.trial && revenue.pricing && (
-                <ExperimentSuggestion
-                  icon={CircleDollarSign}
-                  title="Offer free trial"
-                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
-                  funnelSection="Revenue"
-                />
-              )}
-
-              {revenue.trial && !revenue.pricing && (
-                <ExperimentSuggestion
-                  icon={CircleDollarSign}
-                  title="Optimize pricing"
-                  description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.`}
-                  funnelSection="Revenue"
-                />
-              )}
-
-              {referral.factorReferrals && !referral.incentive && !referral.share && (
-                <ExperimentSuggestion
-                  icon={Users}
-                  title="Add share button"
-                  description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
-                  funnelSection="Referral"
-                />
-              )}
-
-              {referral.factorReferrals && !referral.incentive && referral.share && (
-                <ExperimentSuggestion
-                  icon={Users}
-                  title="Add invite incentive"
-                  description={`Referrals could increase by ${CONTROL_RATES.referral.incentive} per user with incentives.`}
-                  funnelSection="Referral"
-                />
-              )}
-
-              {referral.factorReferrals && referral.incentive && !referral.share && (
-                <ExperimentSuggestion
-                  icon={Users}
-                  title="Add share button"
-                  description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
-                  funnelSection="Referral"
-                />
-              )}
-
-              {!referral.factorReferrals && (
-                <ExperimentSuggestion
-                  icon={Users}
-                  title="Enable referral loop"
-                  description="Turn users into referrers for compounding growth."
-                  funnelSection="Referral"
-                />
-              )}
-
-              {activation.cta && activation.friction && retention.onboarding && retention.email && revenue.trial && revenue.pricing && referral.factorReferrals && referral.incentive && referral.share && (
-                <div className="flex items-center justify-center p-6 rounded-xl border border-slate-100 bg-slate-50/50">
-                  <p className="text-sm text-slate-500 font-medium">All experiments enabled! Great job.</p>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-400 mt-8">
+                  <Lightbulb className="w-12 h-12 mb-3 text-slate-200" />
+                  <p className="text-sm font-medium text-slate-500">No impact to show yet</p>
+                  <p className="text-xs mt-1">Enable improvements to see their impact here.</p>
                 </div>
               )}
-            </div>
-          </Card>
-        </section>
+            </Card>
+
+            {/* Bottom Section: What I'd Test Next */}
+            <Card className="p-5 bg-white shrink-0">
+              <h2 className="text-lg font-bold text-slate-800 mb-1">What to Test Next</h2>
+              <p className="text-xs text-slate-500 mb-5">Based on existing funnel opportunities</p>
+
+              <div className="flex flex-col gap-3">
+                {!activation.cta && !activation.friction && (
+                  <ExperimentSuggestion
+                    icon={Target}
+                    title="Reduce signup friction"
+                    description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
+                    funnelSection="Activation"
+                  />
+                )}
+
+                {!activation.cta && activation.friction && (
+                  <ExperimentSuggestion
+                    icon={Target}
+                    title="Improve CTA"
+                    description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.cta * 100)}% with clearer calls-to-action.`}
+                    funnelSection="Activation"
+                  />
+                )}
+
+                {activation.cta && !activation.friction && (
+                  <ExperimentSuggestion
+                    icon={Target}
+                    title="Reduce signup friction"
+                    description={`Signup rate could improve by ${Math.round(CONTROL_RATES.activation.friction * 100)}% with a simpler flow.`}
+                    funnelSection="Activation"
+                  />
+                )}
+
+                {!retention.onboarding && !retention.email && (
+                  <ExperimentSuggestion
+                    icon={Rocket}
+                    title="Improve onboarding"
+                    description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
+                    funnelSection="Retention"
+                  />
+                )}
+
+                {!retention.onboarding && retention.email && (
+                  <ExperimentSuggestion
+                    icon={Rocket}
+                    title="Improve onboarding"
+                    description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.onboarding * 100)}% with better guidance.`}
+                    funnelSection="Retention"
+                  />
+                )}
+
+                {retention.onboarding && !retention.email && (
+                  <ExperimentSuggestion
+                    icon={Mail}
+                    title="Try email re-engagement"
+                    description={`Activation could improve by ${Math.round(CONTROL_RATES.retention.email * 100)}% with email reminders.`}
+                    funnelSection="Retention"
+                  />
+                )}
+
+                {!revenue.trial && !revenue.pricing && (
+                  <ExperimentSuggestion
+                    icon={CircleDollarSign}
+                    title="Offer free trial"
+                    description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
+                    funnelSection="Revenue"
+                  />
+                )}
+
+                {!revenue.trial && revenue.pricing && (
+                  <ExperimentSuggestion
+                    icon={CircleDollarSign}
+                    title="Offer free trial"
+                    description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.trial * 100)}% with a trial offer.`}
+                    funnelSection="Revenue"
+                  />
+                )}
+
+                {revenue.trial && !revenue.pricing && (
+                  <ExperimentSuggestion
+                    icon={CircleDollarSign}
+                    title="Optimize pricing"
+                    description={`Revenue could improve by ${Math.round(CONTROL_RATES.revenue.pricing * 100)}% with better pricing strategy.`}
+                    funnelSection="Revenue"
+                  />
+                )}
+
+                {referral.factorReferrals && !referral.incentive && !referral.share && (
+                  <ExperimentSuggestion
+                    icon={Users}
+                    title="Add share button"
+                    description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
+                    funnelSection="Referral"
+                  />
+                )}
+
+                {referral.factorReferrals && !referral.incentive && referral.share && (
+                  <ExperimentSuggestion
+                    icon={Users}
+                    title="Add invite incentive"
+                    description={`Referrals could increase by ${CONTROL_RATES.referral.incentive} per user with incentives.`}
+                    funnelSection="Referral"
+                  />
+                )}
+
+                {referral.factorReferrals && referral.incentive && !referral.share && (
+                  <ExperimentSuggestion
+                    icon={Users}
+                    title="Add share button"
+                    description={`Referrals could increase by ${CONTROL_RATES.referral.share} per user with easy sharing.`}
+                    funnelSection="Referral"
+                  />
+                )}
+
+                {!referral.factorReferrals && (
+                  <ExperimentSuggestion
+                    icon={Users}
+                    title="Enable referral loop"
+                    description="Turn users into referrers for compounding growth."
+                    funnelSection="Referral"
+                  />
+                )}
+
+                {activation.cta && activation.friction && retention.onboarding && retention.email && revenue.trial && revenue.pricing && referral.factorReferrals && referral.incentive && referral.share && (
+                  <div className="flex items-center justify-center p-6 rounded-xl border border-slate-100 bg-slate-50/50">
+                    <p className="text-sm text-slate-500 font-medium">All experiments enabled! Great job.</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </section>
+        )}
 
       </main>
       <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
