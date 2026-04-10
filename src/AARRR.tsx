@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2, HelpCircle } from 'lucide-react';
 import { getColorsForStage } from './colors';
 import type { AppState, Channel, FunnelSection } from './Types';
+import mixpanel from "mixpanel-browser";
 
 const qualityByChannel: Record<Channel, number> = {
   x: 0.5,
