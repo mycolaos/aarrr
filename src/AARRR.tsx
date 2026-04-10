@@ -163,7 +163,10 @@ export default function GrowthFunnelSimulator() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowAbout(true)}
+              onClick={() => {
+                mixpanel.track('what_is_this_clicked');
+                setShowAbout(true);
+              }}
               className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
             >
               <HelpCircle className="w-4 h-4" />
