@@ -1,6 +1,6 @@
-import { Card, ExperimentSuggestion, FunnelStep, Toggle } from './components';
+import { Card, ExperimentSuggestion, FunnelStep, Toggle, AboutModal } from './components';
 import { useMemo, useState } from 'react';
-import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2 } from 'lucide-react';
+import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2, HelpCircle } from 'lucide-react';
 import { getColorsForStage } from './colors';
 import type { AppState, Channel, FunnelSection } from './Types';
 
@@ -118,6 +118,7 @@ export function getImpact(state: AppState) {
 
 export default function GrowthFunnelSimulator() {
   // States
+  const [showAbout, setShowAbout] = useState(false);
   const [acquisition, setAcquisition] = useState<AppState['acquisition']>({ channel: 'x' });
   const [activation, setActivation] = useState<AppState['activation']>({ cta: false, friction: false });
   const [retention, setRetention] = useState<AppState['retention']>({ onboarding: false, email: false });
@@ -150,23 +151,32 @@ export default function GrowthFunnelSimulator() {
               <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Growth Funnel Demo',
-                  text: 'Check out this growth funnel simulator to see how changes impact user conversion',
-                  url: window.location.href
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-              }
-            }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
-          >
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowAbout(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
+            >
+              <HelpCircle className="w-4 h-4" />
+              What is this?
+            </button>
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'Growth Funnel Demo',
+                    text: 'Check out this growth funnel simulator to see how changes impact user conversion',
+                    url: window.location.href
+                  });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+          </div>
         </div>
       </header>
 
@@ -506,6 +516,7 @@ export default function GrowthFunnelSimulator() {
         </section>
 
       </main>
+      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
     </div>
   )
 }
