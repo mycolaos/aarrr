@@ -54,7 +54,7 @@ export function applyModifiers(state: AppState) {
   if (state.revenue.trial) revenueRate += CONTROL_RATES.revenue.trial;
   if (state.revenue.pricing) revenueRate += CONTROL_RATES.revenue.pricing;
 
-  let referralRate = 0.50;
+  let referralRate = 0.10;
   if (state.referral.factorReferrals) {
     if (state.referral.incentive) referralRate += CONTROL_RATES.referral.incentive;
     if (state.referral.share) referralRate += CONTROL_RATES.referral.share;
