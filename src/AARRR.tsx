@@ -1,5 +1,5 @@
 import { Card, ExperimentSuggestion, FunnelStep, Toggle, AboutModal } from './components';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2, HelpCircle } from 'lucide-react';
 import { getColorsForStage } from './colors';
 import type { AppState, Channel, FunnelSection } from './Types';
@@ -129,11 +129,20 @@ function trackControlChange(type: string, control: string, value?: string, enabl
 export default function GrowthFunnelSimulator() {
   // States
   const [showAbout, setShowAbout] = useState(false);
+  const [controlChangeCount, setControlChangeCount] = useState(0);
+  const highlightShareButton = controlChangeCount >= 10;
   const [acquisition, setAcquisition] = useState<AppState['acquisition']>({ channel: 'x' });
   const [activation, setActivation] = useState<AppState['activation']>({ cta: false, friction: false });
   const [retention, setRetention] = useState<AppState['retention']>({ onboarding: false, email: false });
   const [revenue, setRevenue] = useState<AppState['revenue']>({ trial: false, pricing: false });
   const [referral, setReferral] = useState<AppState['referral']>({ incentive: false, share: false, factorReferrals: false });
+
+
+  useEffect(() => {
+    if (highlightShareButton) {
+      mixpanel.track('share_button_highlighted');
+    }
+  }, [highlightShareButton]);
 
   // Calculations
   const metrics = useMemo(() => {
@@ -187,7 +196,7 @@ export default function GrowthFunnelSimulator() {
                   navigator.clipboard.writeText(window.location.href);
                 }
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
+              className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors shadow-sm ${highlightShareButton ? 'bg-rose-600 text-white font-bold hover:bg-rose-700' : 'bg-white border-slate-200 text-slate-700 font-medium hover:bg-slate-50 hover:border-slate-300'}`}
             >
               <Share2 className="w-4 h-4" />
               Share
@@ -223,6 +232,7 @@ export default function GrowthFunnelSimulator() {
                           const newChannel = e.target.value as Channel;
                           setAcquisition(prev => ({ ...prev, channel: newChannel }));
                           trackControlChange('Acquisition', 'channel', newChannel);
+                          setControlChangeCount(prev => prev + 1);
                         }}
                       >
                         <option value="x">X (default) - Baseline (low quality)</option>
@@ -251,11 +261,13 @@ export default function GrowthFunnelSimulator() {
                     const newValue = !activation.cta;
                     setActivation(prev => ({ ...prev, cta: newValue }));
                     trackControlChange('Activation', 'cta', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                   <Toggle label="Reduce friction" impact={`+${Math.round(CONTROL_RATES.activation.friction * 100)}% signup`} colorClass="bg-green-600" active={activation.friction} onClick={() => {
                     const newValue = !activation.friction;
                     setActivation(prev => ({ ...prev, friction: newValue }));
                     trackControlChange('Activation', 'friction', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                 </div>
               </div>
@@ -273,11 +285,13 @@ export default function GrowthFunnelSimulator() {
                     const newValue = !retention.onboarding;
                     setRetention(prev => ({ ...prev, onboarding: newValue }));
                     trackControlChange('Retention', 'onboarding', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                   <Toggle label="Email reminders" impact={`+${Math.round(CONTROL_RATES.retention.email * 100)}% activation`} colorClass="bg-purple-600" active={retention.email} onClick={() => {
                     const newValue = !retention.email;
                     setRetention(prev => ({ ...prev, email: newValue }));
                     trackControlChange('Retention', 'email', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                 </div>
               </div>
@@ -295,11 +309,13 @@ export default function GrowthFunnelSimulator() {
                     const newValue = !revenue.trial;
                     setRevenue(prev => ({ ...prev, trial: newValue }));
                     trackControlChange('Revenue', 'free_trial', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                   <Toggle label="Better pricing" impact={`+${Math.round(CONTROL_RATES.revenue.pricing * 100)}% paid`} colorClass="bg-orange-600" active={revenue.pricing} onClick={() => {
                     const newValue = !revenue.pricing;
                     setRevenue(prev => ({ ...prev, pricing: newValue }));
                     trackControlChange('Revenue', 'pricing', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                 </div>
               </div>
@@ -318,17 +334,20 @@ export default function GrowthFunnelSimulator() {
                       const newValue = !referral.factorReferrals;
                       setReferral(prev => ({ ...prev, factorReferrals: newValue }));
                       trackControlChange('Referral', 'include_referrals', undefined, newValue);
+                      setControlChangeCount(prev => prev + 1);
                     }} />
                   </div>
                   <Toggle label="Invite incentive" impact={`+${CONTROL_RATES.referral.incentive} referral`} colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => {
                     const newValue = !referral.incentive;
                     setReferral(prev => ({ ...prev, incentive: newValue }));
                     trackControlChange('Referral', 'invite_incentive', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                   <Toggle label="Share button" impact={`+${CONTROL_RATES.referral.share} referral`} colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => {
                     const newValue = !referral.share;
                     setReferral(prev => ({ ...prev, share: newValue }));
                     trackControlChange('Referral', 'share_button', undefined, newValue);
+                    setControlChangeCount(prev => prev + 1);
                   }} />
                 </div>
               </div>
