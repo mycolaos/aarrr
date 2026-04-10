@@ -117,6 +117,15 @@ export function getImpact(state: AppState) {
   return { deltas, topInsight };
 }
 
+function trackControlChange(type: string, control: string, value?: string, enabled?: boolean) {
+  mixpanel.track('control_changed', {
+    type,
+    control,
+    ...(value !== undefined && { value }),
+    ...(enabled !== undefined && { enabled }),
+  });
+}
+
 export default function GrowthFunnelSimulator() {
   // States
   const [showAbout, setShowAbout] = useState(false);
@@ -204,7 +213,11 @@ export default function GrowthFunnelSimulator() {
                       <select
                         className="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-lg text-sm bg-white appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-colors"
                         value={acquisition.channel}
-                        onChange={(e) => setAcquisition(prev => ({ ...prev, channel: e.target.value as Channel }))}
+                        onChange={(e) => {
+                          const newChannel = e.target.value as Channel;
+                          setAcquisition(prev => ({ ...prev, channel: newChannel }));
+                          trackControlChange('Acquisition', 'channel', newChannel);
+                        }}
                       >
                         <option value="x">X (default) - Baseline (low quality)</option>
                         <option value="hn">Hacker News (+{Math.round((visitorsByChannel.hn - visitorsByChannel.x) / visitorsByChannel.x * 100)}%, high quality)</option>
@@ -228,8 +241,16 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Improve CTA" impact={`+${Math.round(CONTROL_RATES.activation.cta * 100)}% signup`} colorClass="bg-green-600" active={activation.cta} onClick={() => setActivation(prev => ({ ...prev, cta: !prev.cta }))} />
-                  <Toggle label="Reduce friction" impact={`+${Math.round(CONTROL_RATES.activation.friction * 100)}% signup`} colorClass="bg-green-600" active={activation.friction} onClick={() => setActivation(prev => ({ ...prev, friction: !prev.friction }))} />
+                  <Toggle label="Improve CTA" impact={`+${Math.round(CONTROL_RATES.activation.cta * 100)}% signup`} colorClass="bg-green-600" active={activation.cta} onClick={() => {
+                    const newValue = !activation.cta;
+                    setActivation(prev => ({ ...prev, cta: newValue }));
+                    trackControlChange('Activation', 'cta', undefined, newValue);
+                  }} />
+                  <Toggle label="Reduce friction" impact={`+${Math.round(CONTROL_RATES.activation.friction * 100)}% signup`} colorClass="bg-green-600" active={activation.friction} onClick={() => {
+                    const newValue = !activation.friction;
+                    setActivation(prev => ({ ...prev, friction: newValue }));
+                    trackControlChange('Activation', 'friction', undefined, newValue);
+                  }} />
                 </div>
               </div>
 
@@ -242,8 +263,16 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Better onboarding" impact={`+${Math.round(CONTROL_RATES.retention.onboarding * 100)}% activation`} colorClass="bg-purple-600" active={retention.onboarding} onClick={() => setRetention(prev => ({ ...prev, onboarding: !prev.onboarding }))} />
-                  <Toggle label="Email reminders" impact={`+${Math.round(CONTROL_RATES.retention.email * 100)}% activation`} colorClass="bg-purple-600" active={retention.email} onClick={() => setRetention(prev => ({ ...prev, email: !prev.email }))} />
+                  <Toggle label="Better onboarding" impact={`+${Math.round(CONTROL_RATES.retention.onboarding * 100)}% activation`} colorClass="bg-purple-600" active={retention.onboarding} onClick={() => {
+                    const newValue = !retention.onboarding;
+                    setRetention(prev => ({ ...prev, onboarding: newValue }));
+                    trackControlChange('Retention', 'onboarding', undefined, newValue);
+                  }} />
+                  <Toggle label="Email reminders" impact={`+${Math.round(CONTROL_RATES.retention.email * 100)}% activation`} colorClass="bg-purple-600" active={retention.email} onClick={() => {
+                    const newValue = !retention.email;
+                    setRetention(prev => ({ ...prev, email: newValue }));
+                    trackControlChange('Retention', 'email', undefined, newValue);
+                  }} />
                 </div>
               </div>
 
@@ -256,8 +285,16 @@ export default function GrowthFunnelSimulator() {
                   </div>
                 </div>
                 <div className="ml-7">
-                  <Toggle label="Free trial" impact={`+${Math.round(CONTROL_RATES.revenue.trial * 100)}% paid`} colorClass="bg-orange-600" active={revenue.trial} onClick={() => setRevenue(prev => ({ ...prev, trial: !prev.trial }))} />
-                  <Toggle label="Better pricing" impact={`+${Math.round(CONTROL_RATES.revenue.pricing * 100)}% paid`} colorClass="bg-orange-600" active={revenue.pricing} onClick={() => setRevenue(prev => ({ ...prev, pricing: !prev.pricing }))} />
+                  <Toggle label="Free trial" impact={`+${Math.round(CONTROL_RATES.revenue.trial * 100)}% paid`} colorClass="bg-orange-600" active={revenue.trial} onClick={() => {
+                    const newValue = !revenue.trial;
+                    setRevenue(prev => ({ ...prev, trial: newValue }));
+                    trackControlChange('Revenue', 'free_trial', undefined, newValue);
+                  }} />
+                  <Toggle label="Better pricing" impact={`+${Math.round(CONTROL_RATES.revenue.pricing * 100)}% paid`} colorClass="bg-orange-600" active={revenue.pricing} onClick={() => {
+                    const newValue = !revenue.pricing;
+                    setRevenue(prev => ({ ...prev, pricing: newValue }));
+                    trackControlChange('Revenue', 'pricing', undefined, newValue);
+                  }} />
                 </div>
               </div>
 
@@ -271,10 +308,22 @@ export default function GrowthFunnelSimulator() {
                 </div>
                 <div className="ml-7 space-y-1">
                   <div className="pb-2 border-b border-slate-100 mb-2">
-                    <Toggle tooltip="Routes acquired referrals back into the funnel as high-intent users" label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, factorReferrals: !prev.factorReferrals }))} />
+                    <Toggle tooltip="Routes acquired referrals back into the funnel as high-intent users" label="Include referrals" impact="compounding" colorClass="bg-fuchsia-600" active={referral.factorReferrals} onClick={() => {
+                      const newValue = !referral.factorReferrals;
+                      setReferral(prev => ({ ...prev, factorReferrals: newValue }));
+                      trackControlChange('Referral', 'include_referrals', undefined, newValue);
+                    }} />
                   </div>
-                  <Toggle label="Invite incentive" impact={`+${CONTROL_RATES.referral.incentive} referral`} colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, incentive: !prev.incentive }))} />
-                  <Toggle label="Share button" impact={`+${CONTROL_RATES.referral.share} referral`} colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => setReferral(prev => ({ ...prev, share: !prev.share }))} />
+                  <Toggle label="Invite incentive" impact={`+${CONTROL_RATES.referral.incentive} referral`} colorClass="bg-fuchsia-600" active={referral.incentive} disabled={!referral.factorReferrals} onClick={() => {
+                    const newValue = !referral.incentive;
+                    setReferral(prev => ({ ...prev, incentive: newValue }));
+                    trackControlChange('Referral', 'invite_incentive', undefined, newValue);
+                  }} />
+                  <Toggle label="Share button" impact={`+${CONTROL_RATES.referral.share} referral`} colorClass="bg-fuchsia-600" active={referral.share} disabled={!referral.factorReferrals} onClick={() => {
+                    const newValue = !referral.share;
+                    setReferral(prev => ({ ...prev, share: newValue }));
+                    trackControlChange('Referral', 'share_button', undefined, newValue);
+                  }} />
                 </div>
               </div>
 
