@@ -1,6 +1,6 @@
 import { Card, ExperimentSuggestion, FunnelStep, Toggle } from './components';
 import { useMemo, useState } from 'react';
-import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp } from 'lucide-react';
+import { Megaphone, Zap, RefreshCcw, CircleDollarSign, Users, Lightbulb, Target, Rocket, Mail, TrendingUp, Share2 } from 'lucide-react';
 import { getColorsForStage } from './colors';
 import type { AppState, Channel, FunnelSection } from './Types';
 
@@ -140,14 +140,33 @@ export default function GrowthFunnelSimulator() {
     <div className="min-h-screen bg-[#f3f4fa] text-slate-800 font-sans pb-12">
       {/* 1. Header */}
       <header className="max-w-[1440px] mx-auto px-10 py-10 flex flex-col justify-center">
-        <div className="flex items-start gap-3">
-          <div className="bg-blue-600 text-white p-2.5 rounded-[12px] shadow-sm">
-            <TrendingUp className="w-6 h-6" strokeWidth={2.5} />
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="bg-blue-600 text-white p-2.5 rounded-[12px] shadow-sm">
+              <TrendingUp className="w-6 h-6" strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Demo</h1>
+              <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.02em]">Growth Funnel Demo</h1>
-            <p className="text-slate-500 mt-1 text-[15px] font-medium">See how changes impact user conversion</p>
-          </div>
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Growth Funnel Demo',
+                  text: 'Check out this growth funnel simulator to see how changes impact user conversion',
+                  url: window.location.href
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
         </div>
       </header>
 
