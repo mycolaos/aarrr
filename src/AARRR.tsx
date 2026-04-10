@@ -196,17 +196,20 @@ export default function GrowthFunnelSimulator() {
             </button>
             <button
               onClick={() => {
-                trackEvent('share_clicked', {
-                  method: navigator.share ? 'native_share' : 'clipboard',
-                });
                 if (navigator.share) {
                   navigator.share({
                     title: 'Growth Funnel Demo',
                     text: 'Check out this growth funnel simulator to see how changes impact user conversion',
                     url: window.location.href
                   });
+                  trackEvent('share_clicked', {
+                    method: 'native_share',
+                  });
                 } else {
                   navigator.clipboard.writeText(window.location.href);
+                  trackEvent('share_clicked', {
+                    method: 'clipboard',
+                  });
                 }
               }}
               className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors shadow-sm ${highlightShareButton ? 'bg-rose-600 text-white font-bold hover:bg-rose-700' : 'bg-white border-slate-200 text-slate-700 font-medium hover:bg-slate-50 hover:border-slate-300'}`}
